@@ -1,0 +1,33 @@
+service:
+  db-school:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: school_user
+      POSTGRES_PASSWORD: school_pass
+      POSTGRES_DB: school_db
+    volumes:
+      - ./Service_School/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5433:5432"
+  
+  db-user:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pass
+      POSTGRES_DB: auth_db
+    volumes:
+      - ./Service_User/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5434:5432"
+  
+  db-grading:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: grading_user
+      POSTGRES_PASSWORD: grading_pass
+      POSTGRES_DB: grading_db
+    volumes:
+      - ./Service_Grading/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5435:5432"

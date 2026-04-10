@@ -1,0 +1,16 @@
+{
+  "name": "service_grading",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "CB&SC",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@apollo/server": "^5.5.0",
+    "graphql": "^16.13.2"
+  }
+}
