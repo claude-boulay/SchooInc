@@ -7,6 +7,16 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "vitest"
+    "start": "mesh start",
+    "dev": "mesh dev",
+    "build": "mesh build"
+  },
+  "dependencies": {
+    "@graphql-mesh/cli": "^0.100.48",
+    "@graphql-mesh/graphql": "^0.104.37",
+    "@graphql-mesh/openapi": "^0.109.49",
+    "@graphql-mesh/transform-encapsulate": "^0.104.34",
+    "@graphql-mesh/transform-filter-schema": "^0.14.0",
+    "graphql": "^16.8.1"
   }
 }
