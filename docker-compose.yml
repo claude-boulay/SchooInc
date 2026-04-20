@@ -9,6 +9,11 @@ services:
       - ./Service_School/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U school_user -d school_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
   
   db-user:
     image: postgres:15
@@ -20,6 +25,11 @@ services:
       - ./Service_User/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5434:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_user -d auth_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
   
   db-grading:
     image: postgres:15
@@ -28,6 +38,76 @@ services:
       POSTGRES_PASSWORD: grading_pass
       POSTGRES_DB: grading_db
     volumes:
-      - ./Service_Grading/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./Service_Grading/Init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5435:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U grading_user -d grading_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  service-user:
+    build:
+      context: ./Service_User
+      dockerfile: Dockerfile
+    env_file:
+      - ./Service_User/.env
+    environment:
+      DB_HOST: db-user
+      DB_PORT: 5432
+    depends_on:
+      db-user:
+        condition: service_healthy
+    ports:
+      - "4001:4001"
+
+  service-school:
+    build:
+      context: ./Service_School
+      dockerfile: Dockerfile
+    env_file:
+      - ./Service_School/.env
+    environment:
+      DB_HOST: db-school
+      DB_PORT: 5432
+    depends_on:
+      db-school:
+        condition: service_healthy
+    ports:
+      - "4002:4002"
+
+  service-grading:
+    build:
+      context: ./Service_Grading
+      dockerfile: Dockerfile
+    env_file:
+      - ./Service_Grading/.env
+    environment:
+      DB_HOST: db-grading
+      DB_PORT: 5432
+    depends_on:
+      db-grading:
+        condition: service_healthy
+    ports:
+      - "4003:4003"
+
+  gateway:
+    build:
+      context: ./Gateway
+      dockerfile: Dockerfile
+    env_file:
+      - ./Gateway/.env
+    environment:
+      USER_SERVICE_URL: http://service-user:4001/graphql
+      SCHOOL_SERVICE_URL: http://service-school:4002/graphql
+      GRADING_SERVICE_URL: http://service-grading:4003/graphql
+    depends_on:
+      service-user:
+        condition: service_started
+      service-school:
+        condition: service_started
+      service-grading:
+        condition: service_started
+    ports:
+      - "4000:4000"
