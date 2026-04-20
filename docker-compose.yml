@@ -99,6 +99,7 @@ services:
     env_file:
       - ./Gateway/.env
     environment:
+      HOST: 0.0.0.0
       USER_SERVICE_URL: http://service-user:4001/graphql
       SCHOOL_SERVICE_URL: http://service-school:4002/graphql
       GRADING_SERVICE_URL: http://service-grading:4003/graphql
