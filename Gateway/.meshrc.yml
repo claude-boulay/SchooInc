@@ -1,0 +1,75 @@
+# =============================================================
+# GRAPHQL MESH — Configuration du gateway SchooInc
+# =============================================================
+# Ce fichier déclare toutes les sources de données que le gateway
+# agrège en un seul schéma GraphQL unifié.
+#
+# Sources :
+#   1. Service_User    ? Service GraphQL local (port 4001)
+#   2. Service_School  ? Service GraphQL local (port 4002)
+#   3. Service_Grading ? Service GraphQL local (port 4003)
+#
+# Lancer le gateway :
+#   npm run dev   ? mode développement avec hot-reload
+#   npm start     ? mode production
+#
+# GraphiQL accessible sur : http://localhost:4000/graphql
+# =============================================================
+
+sources:
+  # -----------------------------------------------------------
+  # Source 1 : Service Users (GraphQL local port 4001)
+  # -----------------------------------------------------------
+  - name: User
+    handler:
+      graphql:
+        endpoint: "{env.USER_SERVICE_URL}"
+        operationHeaders:
+          # Propager le header Authorization Bearer token aux services
+          Authorization: "{context.headers.authorization}"
+    transforms:
+      - encapsulate:
+          applyTo:
+            query: true
+            mutation: true
+
+  # -----------------------------------------------------------
+  # Source 2 : Service School (GraphQL local port 4002)
+  # -----------------------------------------------------------
+  - name: School
+    handler:
+      graphql:
+        endpoint: "{env.SCHOOL_SERVICE_URL}"
+        operationHeaders:
+          # Propager le header Authorization Bearer token aux services
+          Authorization: "{context.headers.authorization}"
+    transforms:
+      - encapsulate:
+          applyTo:
+            query: true
+            mutation: true
+
+  # -----------------------------------------------------------
+  # Source 3 : Service Grading (GraphQL local port 4003)
+  # -----------------------------------------------------------
+  - name: Grading
+    handler:
+      graphql:
+        endpoint: "{env.GRADING_SERVICE_URL}"
+        operationHeaders:
+          # Propager le header Authorization Bearer token aux services
+          Authorization: "{context.headers.authorization}"
+    transforms:
+      - encapsulate:
+          applyTo:
+            query: true
+            mutation: true
+
+# -----------------------------------------------------------
+# Serveur
+# -----------------------------------------------------------
+serve:
+  port: 4000
+  playground: true
+  cors:
+    origin: "*"
