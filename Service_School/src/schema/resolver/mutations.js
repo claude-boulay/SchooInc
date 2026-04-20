@@ -1,0 +1,170 @@
+import {
+  countStudentsInClass,
+  createClass,
+  deleteClassById,
+  findClassById,
+  updateClassById,
+} from "../../db/models/classes.model.js";
+import { addStudentToClass } from "../../db/models/classes_enrollments.model.js";
+import { addCourseToClass } from "../../db/models/classes_courses.model.js";
+import {
+  createCourse,
+  deleteCourseById,
+  findCourseById,
+  updateCourseById,
+} from "../../db/models/courses.model.js";
+
+const ensureProfessorAuthenticated = (context) => {
+  if (!context.currentUser?.id) {
+    throw new Error("Authentication required");
+  }
+
+  if (context.currentUser.role !== "PROFESSOR") {
+    throw new Error("Professor role required");
+  }
+};
+
+const ensureClassOwnedByProfessor = (schoolClass, professorId) => {
+  if (!schoolClass) {
+    throw new Error("Class not found");
+  }
+
+  if (schoolClass.professorId !== professorId) {
+    throw new Error("You can only modify your own classes");
+  }
+};
+
+const ensureCourseOwnedByProfessor = (course, professorId) => {
+  if (!course) {
+    throw new Error("Course not found");
+  }
+
+  if (course.professorId !== professorId) {
+    throw new Error("You can only modify your own courses");
+  }
+};
+
+const mapDbError = (error) => {
+  if (error?.code === "23505") {
+    if (String(error.constraint).includes("classes_name")) {
+      throw new Error("Class name already exists");
+    }
+
+    if (String(error.constraint).includes("class_enrollments_student_id")) {
+      throw new Error("This student is already enrolled in another class");
+    }
+
+    throw new Error("Unique constraint violation");
+  }
+
+  throw error;
+};
+
+export const mutations = {
+  createClass: async (_, { input }, context) => {
+    ensureProfessorAuthenticated(context);
+
+    try {
+      return await createClass({
+        name: input.name,
+        professorId: context.currentUser.id,
+      });
+    } catch (error) {
+      mapDbError(error);
+    }
+  },
+
+  updateClass: async (_, { input }, context) => {
+    ensureProfessorAuthenticated(context);
+
+    const schoolClass = await findClassById(input.id);
+    ensureClassOwnedByProfessor(schoolClass, context.currentUser.id);
+
+    try {
+      return await updateClassById({ id: input.id, name: input.name });
+    } catch (error) {
+      mapDbError(error);
+    }
+  },
+
+  deleteClass: async (_, { id }, context) => {
+    ensureProfessorAuthenticated(context);
+
+    const schoolClass = await findClassById(id);
+    ensureClassOwnedByProfessor(schoolClass, context.currentUser.id);
+
+    const studentCount = await countStudentsInClass(id);
+    if (studentCount > 0) {
+      throw new Error("Cannot delete class with enrolled students");
+    }
+
+    const deleted = await deleteClassById(id);
+    return Boolean(deleted);
+  },
+
+  addStudentToClass: async (_, { input }, context) => {
+    ensureProfessorAuthenticated(context);
+
+    const schoolClass = await findClassById(input.classId);
+    ensureClassOwnedByProfessor(schoolClass, context.currentUser.id);
+
+    try {
+      return await addStudentToClass({
+        classId: input.classId,
+        studentId: input.studentId,
+      });
+    } catch (error) {
+      mapDbError(error);
+    }
+  },
+
+  createCourse: async (_, { input }, context) => {
+    ensureProfessorAuthenticated(context);
+
+    return createCourse({
+      name: input.name,
+      professorId: context.currentUser.id,
+    });
+  },
+
+  updateCourse: async (_, { input }, context) => {
+    ensureProfessorAuthenticated(context);
+
+    const course = await findCourseById(input.id);
+    ensureCourseOwnedByProfessor(course, context.currentUser.id);
+
+    return updateCourseById({ id: input.id, name: input.name });
+  },
+
+  deleteCourse: async (_, { id }, context) => {
+    ensureProfessorAuthenticated(context);
+
+    const course = await findCourseById(id);
+    ensureCourseOwnedByProfessor(course, context.currentUser.id);
+
+    const deleted = await deleteCourseById(id);
+    return Boolean(deleted);
+  },
+
+  addCourseToClass: async (_, { input }, context) => {
+    ensureProfessorAuthenticated(context);
+
+    const schoolClass = await findClassById(input.classId);
+    ensureClassOwnedByProfessor(schoolClass, context.currentUser.id);
+
+    const course = await findCourseById(input.courseId);
+    if (!course) {
+      throw new Error("Course not found");
+    }
+
+    try {
+      await addCourseToClass({
+        classId: input.classId,
+        courseId: input.courseId,
+      });
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  },
+};

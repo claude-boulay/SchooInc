@@ -1,4 +1,4 @@
-service:
+services:
   db-school:
     image: postgres:15
     environment:
