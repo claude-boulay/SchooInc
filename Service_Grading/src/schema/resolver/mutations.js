@@ -1,4 +1,5 @@
 import {
+  createGradesForEventBatch,
   createGrade,
   deleteGradeById,
   findGradeById,
@@ -21,6 +22,14 @@ const validateGradeValue = (value) => {
   }
 };
 
+const mapDbError = (error) => {
+  if (error?.code === "23505") {
+    throw new Error("A grade already exists for this student and event");
+  }
+
+  throw error;
+};
+
 export const mutations = {
   createGrade: async (_, { input }, context) => {
     ensureProfessor(context);
@@ -28,13 +37,39 @@ export const mutations = {
     const { value, studentId, courseId, comment } = input;
     validateGradeValue(value);
 
-    return createGrade({
-      value,
-      studentId,
-      courseId,
-      professorId: context.currentUser.id,
-      comment,
-    });
+    try {
+      return await createGrade({
+        value,
+        studentId,
+        courseId,
+        eventId: input.eventId,
+        professorId: context.currentUser.id,
+        comment,
+      });
+    } catch (error) {
+      mapDbError(error);
+    }
+  },
+
+  createGradesForEvent: async (_, { input }, context) => {
+    ensureProfessor(context);
+
+    if (!Array.isArray(input.grades) || input.grades.length === 0) {
+      throw new Error("At least one student grade is required");
+    }
+
+    input.grades.forEach((gradeItem) => validateGradeValue(gradeItem.value));
+
+    try {
+      return await createGradesForEventBatch({
+        eventId: input.eventId,
+        courseId: input.courseId,
+        professorId: context.currentUser.id,
+        grades: input.grades,
+      });
+    } catch (error) {
+      mapDbError(error);
+    }
   },
 
   updateGrade: async (_, { input }, context) => {
@@ -52,7 +87,15 @@ export const mutations = {
       throw new Error("You can only update your own grades");
     }
 
-    return updateGradeById(id, { value, comment });
+    try {
+      return await updateGradeById(id, {
+        value,
+        comment,
+        eventId: input.eventId,
+      });
+    } catch (error) {
+      mapDbError(error);
+    }
   },
 
   deleteGrade: async (_, { id }, context) => {

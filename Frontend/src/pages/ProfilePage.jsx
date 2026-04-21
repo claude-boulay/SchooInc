@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PageSection from '../components/PageSection'
-import { deleteMyAccount, updateMyProfile } from '../lib/authApi'
+import { deleteMyAccount, fetchStudentEventGradesData, updateMyProfile } from '../lib/authApi'
 import { clearAuthSession, getAuthUser, updateStoredAuthUser } from '../lib/authSession'
 
 export default function ProfilePage() {
@@ -15,6 +15,31 @@ export default function ProfilePage() {
     const [success, setSuccess] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isDeleting, setIsDeleting] = useState(false)
+    const [studentEvents, setStudentEvents] = useState([])
+    const [isLoadingGrades, setIsLoadingGrades] = useState(false)
+    const [gradesError, setGradesError] = useState('')
+
+    useEffect(() => {
+        const loadGrades = async () => {
+            if (!initialUser?.id || initialUser.role !== 'STUDENT') {
+                return
+            }
+
+            setIsLoadingGrades(true)
+            setGradesError('')
+
+            try {
+                const data = await fetchStudentEventGradesData({ studentId: initialUser.id })
+                setStudentEvents(data.events)
+            } catch (loadError) {
+                setGradesError(loadError.message)
+            } finally {
+                setIsLoadingGrades(false)
+            }
+        }
+
+        loadGrades()
+    }, [initialUser?.id, initialUser?.role])
 
     const handleSubmit = async (event) => {
         event.preventDefault()
@@ -127,6 +152,44 @@ export default function ProfilePage() {
                     {isDeleting ? 'Suppression...' : 'Supprimer mon compte'}
                 </button>
             </form>
+
+            {initialUser?.role === 'STUDENT' ? (
+                <div className="mt-10 rounded-xl border border-primary-500/30 p-5">
+                    <h2 className="text-xl font-semibold">Mes notes par evenement</h2>
+                    <p className="mt-1 text-sm text-gray-300">Chaque ligne represente un evenement de cours et la note associee.</p>
+
+                    {gradesError ? (
+                        <p className="mt-4 rounded-lg border border-red-400/50 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                            {gradesError}
+                        </p>
+                    ) : null}
+
+                    {isLoadingGrades ? <p className="mt-4 text-sm text-gray-300">Chargement des notes...</p> : null}
+
+                    {!isLoadingGrades && !gradesError && studentEvents.length === 0 ? (
+                        <p className="mt-4 text-sm text-gray-300">Aucun evenement pour le moment.</p>
+                    ) : null}
+
+                    {!isLoadingGrades && !gradesError && studentEvents.length > 0 ? (
+                        <ul className="mt-4 space-y-2 text-sm text-gray-100">
+                            {studentEvents.map((eventItem) => (
+                                <li key={eventItem.id} className="rounded-md border border-primary-500/20 bg-black/40 p-3">
+                                    <p className="font-medium text-white">{eventItem.courseName} - {eventItem.className}</p>
+                                    <p className="text-gray-300">
+                                        {new Date(eventItem.startTime).toLocaleDateString()} de {new Date(eventItem.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} a {new Date(eventItem.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </p>
+                                    <p className="mt-1 text-primary-200 font-semibold">
+                                        Note: {eventItem.gradeValue === null ? 'Non notee' : `${eventItem.gradeValue}/20`}
+                                    </p>
+                                    {eventItem.gradeComment ? (
+                                        <p className="text-gray-300">Commentaire: {eventItem.gradeComment}</p>
+                                    ) : null}
+                                </li>
+                            ))}
+                        </ul>
+                    ) : null}
+                </div>
+            ) : null}
         </PageSection>
     )
 }

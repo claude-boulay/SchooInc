@@ -17,6 +17,16 @@ pool.on("error", (error) => {
 
 export const query = (text, params = []) => pool.query(text, params);
 
+export const getClient = () => pool.connect();
+
+export const ensureSchema = async () => {
+  await query("ALTER TABLE grades ADD COLUMN IF NOT EXISTS event_id UUID");
+  await query("CREATE INDEX IF NOT EXISTS idx_grades_event ON grades(event_id)");
+  await query(
+    "CREATE UNIQUE INDEX IF NOT EXISTS idx_grades_event_student_unique ON grades(event_id, student_id) WHERE event_id IS NOT NULL"
+  );
+};
+
 export const healthcheckDb = async () => {
   const result = await query("SELECT NOW() AS now");
   return result.rows[0];

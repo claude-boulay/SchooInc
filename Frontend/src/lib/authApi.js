@@ -173,6 +173,60 @@ query PublicCoursesData {
 }
 `
 
+const STUDENT_EVENT_GRADES_QUERY = `
+query StudentEventGradesData {
+  School {
+    classes(sort: ASC, limit: 100, offset: 0) {
+      items {
+        id
+        name
+        enrollments {
+          studentId
+        }
+        events {
+          id
+          startTime
+          endTime
+          courseId
+          classId
+          course {
+            name
+          }
+        }
+      }
+    }
+  }
+  Grading {
+    myGrades {
+      courseId
+      grades {
+        id
+        value
+        comment
+        eventId
+        courseId
+        createdAt
+      }
+    }
+  }
+}
+`
+
+const CREATE_EVENT_GRADES_MUTATION = `
+mutation CreateGradesForEvent($input: GradeEventBatchInput!) {
+  Grading {
+    createGradesForEvent(input: $input) {
+      id
+      studentId
+      value
+      eventId
+      courseId
+      comment
+    }
+  }
+}
+`
+
 const CREATE_CALENDAR_EVENT_MUTATION = `
 mutation CreateCalendarEvent($input: CalendarEventCreateInput!) {
   School {
@@ -463,6 +517,59 @@ export async function fetchPublicCoursesData() {
   }))
 
   return { courses }
+}
+
+export async function fetchStudentEventGradesData({ studentId }) {
+  const data = await executeGateway(STUDENT_EVENT_GRADES_QUERY)
+
+  const myGrades = data.Grading.myGrades
+    .flatMap((entry) => entry.grades)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+
+  const gradeByEventId = new Map()
+  myGrades.forEach((gradeItem) => {
+    if (gradeItem.eventId && !gradeByEventId.has(gradeItem.eventId)) {
+      gradeByEventId.set(gradeItem.eventId, gradeItem)
+    }
+  })
+
+  const classes = data.School.classes.items.filter((classItem) =>
+    classItem.enrollments.some((enrollment) => enrollment.studentId === studentId),
+  )
+
+  const events = classes
+    .flatMap((classItem) =>
+      (classItem.events || []).map((eventItem) => {
+        const grade = gradeByEventId.get(eventItem.id)
+
+        return {
+          id: eventItem.id,
+          classId: classItem.id,
+          className: classItem.name,
+          courseId: eventItem.courseId,
+          courseName: eventItem.course?.name || 'Cours inconnu',
+          startTime: eventItem.startTime,
+          endTime: eventItem.endTime,
+          gradeValue: grade?.value ?? null,
+          gradeComment: grade?.comment ?? null,
+        }
+      }),
+    )
+    .sort((a, b) => a.startTime.localeCompare(b.startTime))
+
+  return { events }
+}
+
+export async function createEventGradesBatch({ eventId, courseId, grades }) {
+  const data = await executeGateway(CREATE_EVENT_GRADES_MUTATION, {
+    input: {
+      eventId,
+      courseId,
+      grades,
+    },
+  })
+
+  return data.Grading.createGradesForEvent
 }
 
 export async function createProfessorClass({ name }) {

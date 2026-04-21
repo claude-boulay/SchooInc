@@ -67,3 +67,20 @@ export const deleteCourseById = async (id) => {
 	);
 	return mapCourse(result.rows[0]);
 };
+
+export const listCourseProfessorIds = async () => {
+	const result = await query(
+		"SELECT DISTINCT professor_id FROM courses ORDER BY professor_id ASC"
+	);
+
+	return result.rows.map((row) => row.professor_id);
+};
+
+export const deleteCoursesByProfessorId = async (professorId) => {
+	const result = await query(
+		"DELETE FROM courses WHERE professor_id = $1 RETURNING id",
+		[professorId]
+	);
+
+	return result.rowCount;
+};

@@ -116,3 +116,34 @@ export const findClassByStudentId = async (studentId) => {
 
 	return mapClass(result.rows[0]);
 };
+
+export const listClassProfessorIds = async () => {
+	const result = await query(
+		"SELECT DISTINCT professor_id FROM classes ORDER BY professor_id ASC"
+	);
+
+	return result.rows.map((row) => row.professor_id);
+};
+
+export const deleteClassesByProfessorId = async (professorId) => {
+	const classIdsResult = await query(
+		"SELECT id FROM classes WHERE professor_id = $1",
+		[professorId]
+	);
+
+	const classIds = classIdsResult.rows.map((row) => row.id);
+	if (classIds.length === 0) {
+		return 0;
+	}
+
+	await query("DELETE FROM class_enrollments WHERE class_id = ANY($1::uuid[])", [
+		classIds,
+	]);
+
+	const deleted = await query(
+		"DELETE FROM classes WHERE professor_id = $1 RETURNING id",
+		[professorId]
+	);
+
+	return deleted.rowCount;
+};

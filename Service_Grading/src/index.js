@@ -4,7 +4,7 @@ import { expressMiddleware } from "@as-integrations/express5";
 import cors from "cors";
 import express from "express";
 import jwt from "jsonwebtoken";
-import { healthcheckDb } from "./db/db.js";
+import { ensureSchema, healthcheckDb } from "./db/db.js";
 import { resolvers } from "./schema/resolver/resolvers.js";
 import { typeDefs } from "./schema/schema.js";
 
@@ -36,6 +36,7 @@ const getCurrentUser = (authorizationHeader) => {
 
 const app = express();
 const server = new ApolloServer({ typeDefs, resolvers });
+await ensureSchema();
 await server.start();
 
 app.use(

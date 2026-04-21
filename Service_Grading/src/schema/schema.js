@@ -8,6 +8,7 @@ export const typeDefs = `
     value: Float!
     studentId: ID!
     courseId: ID!
+    eventId: ID
     professorId: ID!
     comment: String
     createdAt: String!

@@ -111,6 +111,11 @@ export const mutations = {
     const schoolClass = await findClassById(input.classId);
     ensureClassOwnedByProfessor(schoolClass, context.currentUser.id);
 
+    const studentCount = await countStudentsInClass(input.classId);
+    if (studentCount >= 30) {
+      throw new Error("Class capacity reached (30 students maximum)");
+    }
+
     try {
       return await addStudentToClass({
         classId: input.classId,

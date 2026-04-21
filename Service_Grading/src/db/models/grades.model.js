@@ -1,10 +1,11 @@
-import { query } from "../db.js";
+import { getClient, query } from "../db.js";
 
 const GRADE_COLUMNS = `
   id,
   value,
   student_id,
   course_id,
+  event_id,
   professor_id,
   comment,
   created_at,
@@ -21,6 +22,7 @@ const mapGrade = (row) => {
     value: parseFloat(row.value),
     studentId: row.student_id,
     courseId: row.course_id,
+    eventId: row.event_id,
     professorId: row.professor_id,
     comment: row.comment,
     createdAt: row.created_at,
@@ -72,28 +74,65 @@ export const listGradesByClass = async (classId) => {
   return result.rows.map(mapGrade);
 };
 
-export const createGrade = async ({ value, studentId, courseId, professorId, comment }) => {
+export const createGrade = async ({ value, studentId, courseId, eventId, professorId, comment }) => {
   const result = await query(
     `
-      INSERT INTO grades (value, student_id, course_id, professor_id, comment)
-      VALUES ($1, $2, $3, $4, $5)
+      INSERT INTO grades (value, student_id, course_id, event_id, professor_id, comment)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING ${GRADE_COLUMNS}
     `,
-    [value, studentId, courseId, professorId, comment]
+    [value, studentId, courseId, eventId || null, professorId, comment]
   );
 
   return mapGrade(result.rows[0]);
 };
 
-export const updateGradeById = async (id, { value, comment }) => {
+export const createGradesForEventBatch = async ({ eventId, courseId, professorId, grades }) => {
+  const client = await getClient();
+
+  try {
+    await client.query("BEGIN");
+
+    const created = [];
+    for (const gradeItem of grades) {
+      const result = await client.query(
+        `
+          INSERT INTO grades (value, student_id, course_id, event_id, professor_id, comment)
+          VALUES ($1, $2, $3, $4, $5, $6)
+          RETURNING ${GRADE_COLUMNS}
+        `,
+        [
+          gradeItem.value,
+          gradeItem.studentId,
+          courseId,
+          eventId,
+          professorId,
+          gradeItem.comment || null,
+        ]
+      );
+
+      created.push(mapGrade(result.rows[0]));
+    }
+
+    await client.query("COMMIT");
+    return created;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+};
+
+export const updateGradeById = async (id, { value, comment, eventId }) => {
   const result = await query(
     `
       UPDATE grades
-      SET value = $1, comment = $2, updated_at = CURRENT_TIMESTAMP
-      WHERE id = $3
+      SET value = $1, comment = $2, event_id = $3, updated_at = CURRENT_TIMESTAMP
+      WHERE id = $4
       RETURNING ${GRADE_COLUMNS}
     `,
-    [value, comment, id]
+    [value, comment, eventId || null, id]
   );
 
   return mapGrade(result.rows[0]);

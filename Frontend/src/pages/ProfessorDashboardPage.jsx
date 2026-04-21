@@ -2,6 +2,7 @@ import PageSection from '../components/PageSection'
 import { useEffect, useMemo, useState } from 'react'
 import {
     addStudentToProfessorClass,
+    createEventGradesBatch,
     createProfessorClass,
     createProfessorCourse,
     deleteProfessorClass,
@@ -34,6 +35,9 @@ export default function ProfessorDashboardPage() {
     const [eventEndTime, setEventEndTime] = useState('')
     const [eventCourseId, setEventCourseId] = useState('')
     const [eventClassId, setEventClassId] = useState('')
+    const [selectedEventToGradeId, setSelectedEventToGradeId] = useState('')
+    const [gradeValuesByStudentId, setGradeValuesByStudentId] = useState({})
+    const [gradeCommentsByStudentId, setGradeCommentsByStudentId] = useState({})
     const [isLoading, setIsLoading] = useState(true)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState('')
@@ -67,6 +71,28 @@ export default function ProfessorDashboardPage() {
         return map
     }, [students])
 
+    const eventsToGrade = useMemo(
+        () =>
+            sortedClasses.flatMap((classItem) =>
+                (classItem.events || []).map((eventItem) => ({
+                    id: eventItem.id,
+                    classId: classItem.id,
+                    className: classItem.name,
+                    courseId: eventItem.courseId,
+                    courseName: eventItem.course?.name || 'Cours inconnu',
+                    startTime: eventItem.startTime,
+                    endTime: eventItem.endTime,
+                    studentIds: (classItem.enrollments || []).map((enrollment) => enrollment.studentId),
+                })),
+            ),
+        [sortedClasses],
+    )
+
+    const selectedEventToGrade = useMemo(
+        () => eventsToGrade.find((eventItem) => eventItem.id === selectedEventToGradeId) || null,
+        [eventsToGrade, selectedEventToGradeId],
+    )
+
     const reloadDashboardData = async () => {
         const data = await fetchProfessorDashboardData()
         setClasses(data.classes)
@@ -83,6 +109,15 @@ export default function ProfessorDashboardPage() {
             setSelectedClassId('')
             setSelectedClassToEditId('')
             setEventClassId('')
+        }
+
+        const ownedEvents = ownedClasses.flatMap((classItem) => classItem.events || [])
+        if (ownedEvents.length > 0) {
+            setSelectedEventToGradeId((previous) =>
+                ownedEvents.some((eventItem) => eventItem.id === previous) ? previous : ownedEvents[0].id,
+            )
+        } else {
+            setSelectedEventToGradeId('')
         }
 
         if (ownedCourses.length > 0) {
@@ -299,6 +334,68 @@ export default function ProfessorDashboardPage() {
             await deleteCalendarEvent({ id: eventId })
             await reloadDashboardData()
             setSuccess('Evenement supprime avec succes.')
+        } catch (submitError) {
+            setError(submitError.message)
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    const handleGradeValueChange = (studentId, nextValue) => {
+        setGradeValuesByStudentId((previous) => ({
+            ...previous,
+            [studentId]: nextValue,
+        }))
+    }
+
+    const handleGradeCommentChange = (studentId, nextComment) => {
+        setGradeCommentsByStudentId((previous) => ({
+            ...previous,
+            [studentId]: nextComment,
+        }))
+    }
+
+    const handleGradeEvent = async (event) => {
+        event.preventDefault()
+
+        if (!selectedEventToGrade) {
+            return
+        }
+
+        const grades = selectedEventToGrade.studentIds
+            .map((studentId) => {
+                const rawValue = gradeValuesByStudentId[studentId]
+                if (rawValue === undefined || rawValue === '') {
+                    return null
+                }
+
+                return {
+                    studentId,
+                    value: Number(rawValue),
+                    comment: gradeCommentsByStudentId[studentId]?.trim() || null,
+                }
+            })
+            .filter(Boolean)
+
+        if (grades.length === 0) {
+            setError('Renseigne au moins une note avant validation.')
+            return
+        }
+
+        setError('')
+        setSuccess('')
+        setIsSubmitting(true)
+
+        try {
+            await createEventGradesBatch({
+                eventId: selectedEventToGrade.id,
+                courseId: selectedEventToGrade.courseId,
+                grades,
+            })
+
+            setGradeValuesByStudentId({})
+            setGradeCommentsByStudentId({})
+            setSuccess('Notation de l evenement enregistree avec succes.')
         } catch (submitError) {
             setError(submitError.message)
         } finally {
@@ -629,7 +726,7 @@ export default function ProfessorDashboardPage() {
                             </select>
                         </div>
                     </div>
-                    
+
                     <button
                         type="submit"
                         disabled={isSubmitting || !eventClassId || !eventCourseId || !eventDate || !eventStartTime || !eventEndTime}
@@ -645,7 +742,7 @@ export default function ProfessorDashboardPage() {
                     {sortedClasses.map((cl) => {
                         const events = cl.events || []
                         if (events.length === 0) return null
-                        
+
                         return (
                             <div key={cl.id} className="mt-4">
                                 <h4 className="font-medium text-primary-300">{cl.name}</h4>
@@ -655,7 +752,7 @@ export default function ProfessorDashboardPage() {
                                             <div>
                                                 <p className="font-semibold">{ev.course?.name || 'Cours inconnu'}</p>
                                                 <p className="text-gray-300">
-                                                    {new Date(ev.startTime).toLocaleDateString()} de {new Date(ev.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} a {new Date(ev.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                                    {new Date(ev.startTime).toLocaleDateString()} de {new Date(ev.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} a {new Date(ev.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </p>
                                             </div>
                                             <button
@@ -673,6 +770,83 @@ export default function ProfessorDashboardPage() {
                         )
                     })}
                 </div>
+            </div>
+
+            <div className="mt-8 rounded-xl border border-primary-500/30 p-5">
+                <h2 className="text-xl font-semibold">Noter un evenement</h2>
+                <p className="mt-1 text-sm text-gray-300">Choisis un evenement puis attribue une note sur 20 aux etudiants de la classe.</p>
+
+                {eventsToGrade.length === 0 ? (
+                    <p className="mt-4 text-sm text-gray-300">Aucun evenement disponible pour la notation.</p>
+                ) : (
+                    <form className="mt-4" onSubmit={handleGradeEvent}>
+                        <label className="mb-2 block text-sm text-gray-200" htmlFor="event-to-grade-select">
+                            Evenement
+                        </label>
+                        <select
+                            id="event-to-grade-select"
+                            value={selectedEventToGradeId}
+                            onChange={(event) => setSelectedEventToGradeId(event.target.value)}
+                            className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                        >
+                            {eventsToGrade.map((eventItem) => (
+                                <option key={eventItem.id} value={eventItem.id}>
+                                    {eventItem.className} - {eventItem.courseName} - {new Date(eventItem.startTime).toLocaleDateString()} {new Date(eventItem.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </option>
+                            ))}
+                        </select>
+
+                        {selectedEventToGrade && selectedEventToGrade.studentIds.length > 0 ? (
+                            <div className="mt-4 space-y-3">
+                                {selectedEventToGrade.studentIds.map((studentId) => {
+                                    const student = studentsById.get(studentId)
+
+                                    return (
+                                        <div key={studentId} className="rounded-md border border-primary-500/20 bg-black/40 p-3">
+                                            <p className="font-medium text-white">{student ? student.pseudo : studentId}</p>
+                                            <p className="text-xs text-gray-400">{student ? student.email : 'Etudiant inconnu'}</p>
+                                            <div className="mt-2 grid gap-3 md:grid-cols-2">
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    max="20"
+                                                    step="0.25"
+                                                    placeholder="Note /20"
+                                                    value={gradeValuesByStudentId[studentId] || ''}
+                                                    onChange={(event) => handleGradeValueChange(studentId, event.target.value)}
+                                                    className="rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Commentaire (optionnel)"
+                                                    value={gradeCommentsByStudentId[studentId] || ''}
+                                                    onChange={(event) => handleGradeCommentChange(studentId, event.target.value)}
+                                                    className="rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                                                />
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        ) : null}
+
+                        {selectedEventToGrade && selectedEventToGrade.studentIds.length === 0 ? (
+                            <p className="mt-4 text-sm text-gray-300">Aucun etudiant inscrit dans la classe de cet evenement.</p>
+                        ) : null}
+
+                        <button
+                            type="submit"
+                            disabled={
+                                isSubmitting ||
+                                !selectedEventToGrade ||
+                                selectedEventToGrade.studentIds.length === 0
+                            }
+                            className="mt-4 rounded-lg bg-gradient-to-r from-primary-500 to-primary-400 px-4 py-3 font-semibold"
+                        >
+                            Enregistrer les notes
+                        </button>
+                    </form>
+                )}
             </div>
         </PageSection>
     )
