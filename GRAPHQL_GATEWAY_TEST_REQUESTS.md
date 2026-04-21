@@ -229,7 +229,22 @@ Variables :
       "studentId": "PUT_STUDENT_ID_HERE"
     }
 
-### 3.6 Création de cours (professeur, protégé)
+### 3.6 Retirer un étudiant d une classe (professeur, protégé)
+
+    mutation RemoveStudentFromClass($classId: ID!, $studentId: ID!) {
+      School {
+        removeStudentFromClass(input: { classId: $classId, studentId: $studentId })
+      }
+    }
+
+Variables :
+
+    {
+      "classId": "PUT_CLASS_ID_HERE",
+      "studentId": "PUT_STUDENT_ID_HERE"
+    }
+
+### 3.7 Création de cours (professeur, protégé)
 
     mutation CreateCourse {
       School {
@@ -241,7 +256,7 @@ Variables :
       }
     }
 
-### 3.7 Associer un cours à une classe (professeur, protégé)
+### 3.8 Associer un cours à une classe (professeur, protégé)
 
     mutation AddCourseToClass($classId: ID!, $courseId: ID!) {
       School {
@@ -256,7 +271,7 @@ Variables :
       "courseId": "PUT_COURSE_ID_HERE"
     }
 
-### 3.8 Suppression de classe (professeur, protégé)
+### 3.9 Suppression de classe (professeur, protégé)
 
 Note : doit échouer si des étudiants sont inscrits dans la classe.
 

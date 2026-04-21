@@ -13,6 +13,11 @@ export const inputDefs = `
     studentId: ID!
   }
 
+  input RemoveStudentFromClassInput {
+    classId: ID!
+    studentId: ID!
+  }
+
   input CourseCreateInput {
     name: String!
   }

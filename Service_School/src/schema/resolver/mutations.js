@@ -5,7 +5,10 @@ import {
   findClassById,
   updateClassById,
 } from "../../db/models/classes.model.js";
-import { addStudentToClass } from "../../db/models/classes_enrollments.model.js";
+import {
+  addStudentToClass,
+  removeStudentFromClass,
+} from "../../db/models/classes_enrollments.model.js";
 import { addCourseToClass } from "../../db/models/classes_courses.model.js";
 import {
   createCourse,
@@ -116,6 +119,24 @@ export const mutations = {
     } catch (error) {
       mapDbError(error);
     }
+  },
+
+  removeStudentFromClass: async (_, { input }, context) => {
+    ensureProfessorAuthenticated(context);
+
+    const schoolClass = await findClassById(input.classId);
+    ensureClassOwnedByProfessor(schoolClass, context.currentUser.id);
+
+    const removedEnrollment = await removeStudentFromClass({
+      classId: input.classId,
+      studentId: input.studentId,
+    });
+
+    if (!removedEnrollment) {
+      throw new Error("Student is not enrolled in this class");
+    }
+
+    return true;
   },
 
   createCourse: async (_, { input }, context) => {

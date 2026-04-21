@@ -31,6 +31,19 @@ export const addStudentToClass = async ({ classId, studentId }) => {
 	return mapEnrollment(result.rows[0]);
 };
 
+export const removeStudentFromClass = async ({ classId, studentId }) => {
+	const result = await query(
+		`
+			DELETE FROM class_enrollments
+			WHERE class_id = $1 AND student_id = $2
+			RETURNING ${ENROLLMENT_COLUMNS}
+		`,
+		[classId, studentId]
+	);
+
+	return mapEnrollment(result.rows[0]);
+};
+
 export const listEnrollmentsByClassId = async (classId) => {
 	const result = await query(
 		`

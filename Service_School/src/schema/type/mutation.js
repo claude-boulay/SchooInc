@@ -4,6 +4,7 @@ export const mutationTypeDefs = `
     updateClass(input: ClassUpdateInput!): Class!
     deleteClass(id: ID!): Boolean!
     addStudentToClass(input: AddStudentToClassInput!): ClassEnrollment!
+    removeStudentFromClass(input: RemoveStudentFromClassInput!): Boolean!
 
     createCourse(input: CourseCreateInput!): Course!
     updateCourse(input: CourseUpdateInput!): Course!
