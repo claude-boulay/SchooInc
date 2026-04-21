@@ -3,6 +3,26 @@ import PageSection from '../components/PageSection'
 import { fetchStudentDashboardData } from '../lib/authApi'
 import { getAuthUser } from '../lib/authSession'
 
+const WEEKDAY_LABELS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi']
+
+function startOfCurrentWeekMonday() {
+    const now = new Date()
+    const monday = new Date(now)
+    const day = monday.getDay()
+    const mondayOffset = (day + 6) % 7
+
+    monday.setDate(monday.getDate() - mondayOffset)
+    monday.setHours(0, 0, 0, 0)
+    return monday
+}
+
+function localDateKey(date) {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+}
+
 export default function StudentDashboardPage() {
     const currentUser = useMemo(() => getAuthUser(), [])
     const [classes, setClasses] = useState([])
@@ -33,8 +53,58 @@ export default function StudentDashboardPage() {
         loadData()
     }, [currentUser?.id])
 
+    const events = useMemo(
+        () =>
+            classes
+                .flatMap((classItem) =>
+                    (classItem.events || []).map((eventItem) => ({
+                        id: eventItem.id,
+                        className: classItem.name,
+                        professorPseudo: classItem.professorPseudo,
+                        courseName: eventItem.course?.name || 'Cours inconnu',
+                        startTime: eventItem.startTime,
+                        endTime: eventItem.endTime,
+                    })),
+                )
+                .sort((a, b) => a.startTime.localeCompare(b.startTime)),
+        [classes],
+    )
+
+    const weekCalendar = useMemo(() => {
+        const monday = startOfCurrentWeekMonday()
+        const days = Array.from({ length: 5 }, (_, index) => {
+            const date = new Date(monday)
+            date.setDate(monday.getDate() + index)
+
+            return {
+                label: WEEKDAY_LABELS[index],
+                key: localDateKey(date),
+                date,
+                events: [],
+            }
+        })
+
+        const dayMap = new Map(days.map((day) => [day.key, day]))
+
+        events.forEach((eventItem) => {
+            const start = new Date(eventItem.startTime)
+            const key = localDateKey(start)
+            const day = dayMap.get(key)
+
+            if (day) {
+                day.events.push(eventItem)
+            }
+        })
+
+        days.forEach((day) => {
+            day.events.sort((a, b) => a.startTime.localeCompare(b.startTime))
+        })
+
+        return days
+    }, [events])
+
     return (
-        <PageSection title="Dashboard etudiant" subtitle="Resume des cours, classes et notes de l etudiant connecte.">
+        <PageSection title="Calendrier etudiant" subtitle="Vue dediee aux evenements de cours de l etudiant connecte.">
             {error ? (
                 <p className="mb-6 rounded-lg border border-red-400/50 bg-red-500/10 px-3 py-2 text-sm text-red-200">
                     {error}
@@ -42,47 +112,42 @@ export default function StudentDashboardPage() {
             ) : null}
 
             {isLoading ? (
-                <p className="text-gray-200">Chargement des informations etudiant...</p>
+                <p className="text-gray-200">Chargement du calendrier...</p>
             ) : null}
 
-            {!isLoading && !error && classes.length === 0 ? (
+            {!isLoading && !error && events.length === 0 ? (
                 <p className="rounded-lg border border-primary-500/30 bg-black/40 px-4 py-3 text-gray-200">
-                    Tu n es inscrit a aucune classe pour le moment.
+                    Aucun evenement prevu pour le moment.
                 </p>
             ) : null}
 
-            {!isLoading && !error && classes.length > 0 ? (
-                <div className="grid gap-4 md:grid-cols-2">
-                    {classes.map((classItem) => (
-                        <article key={classItem.id} className="rounded-xl border border-primary-500/30 bg-black/40 p-5">
-                            <p className="text-xs uppercase tracking-wide text-primary-300">Classe</p>
-                            <h2 className="mt-1 text-xl font-semibold text-white">{classItem.name}</h2>
+            {!isLoading && !error && events.length > 0 ? (
+                <div className="overflow-x-auto">
+                    <div className="grid min-w-[960px] grid-cols-5 gap-3">
+                        {weekCalendar.map((day) => (
+                            <section key={day.key} className="rounded-xl border border-primary-500/30 bg-black/40 p-4">
+                                <p className="text-sm font-semibold text-white">{day.label}</p>
+                                <p className="text-xs text-gray-300">{day.date.toLocaleDateString()}</p>
 
-                            <p className="mt-4 text-xs uppercase tracking-wide text-primary-300">Prof referent</p>
-                            <p className="mt-1 text-lg text-gray-100">{classItem.professorPseudo}</p>
-
-                            <div className="mt-6">
-                                <h3 className="text-sm uppercase tracking-wide text-primary-300 border-b border-primary-500/30 pb-2 mb-3">Calendrier ({classItem.events?.length || 0} evenements)</h3>
-                                {classItem.events && classItem.events.length > 0 ? (
-                                    <ul className="space-y-3">
-                                        {classItem.events.map((ev) => (
-                                            <li key={ev.id} className="bg-white/5 p-3 rounded border border-white/10">
-                                                <p className="font-semibold text-gray-100">{ev.course?.name || 'Cours inconnu'}</p>
-                                                <p className="text-sm text-gray-300 mt-1">
-                                                    Le {new Date(ev.startTime).toLocaleDateString()}
-                                                </p>
-                                                <p className="text-sm text-gray-400">
-                                                    De {new Date(ev.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} a {new Date(ev.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                {day.events.length === 0 ? (
+                                    <p className="mt-4 text-xs text-gray-400">Aucun evenement</p>
+                                ) : (
+                                    <ul className="mt-3 space-y-2">
+                                        {day.events.map((eventItem) => (
+                                            <li key={eventItem.id} className="rounded-md border border-white/10 bg-white/5 p-2">
+                                                <p className="text-sm font-medium text-white">{eventItem.courseName}</p>
+                                                <p className="text-xs text-primary-200">{eventItem.className}</p>
+                                                <p className="text-xs text-gray-300">{eventItem.professorPseudo}</p>
+                                                <p className="mt-1 text-xs text-gray-300">
+                                                    {new Date(eventItem.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - {new Date(eventItem.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </p>
                                             </li>
                                         ))}
                                     </ul>
-                                ) : (
-                                    <p className="text-xs text-gray-400">Aucun evenement prevu.</p>
                                 )}
-                            </div>
-                        </article>
-                    ))}
+                            </section>
+                        ))}
+                    </div>
                 </div>
             ) : null}
         </PageSection>

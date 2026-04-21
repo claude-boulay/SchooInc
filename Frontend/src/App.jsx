@@ -1,5 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { Outlet } from 'react-router-dom'
+import { BrowserRouter as Router, Navigate, Outlet, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
@@ -50,7 +49,8 @@ function App() {
                         <Route path="/change-password" element={<ChangePasswordPage />} />
 
                         <Route element={<RoleRoute allowedRoles={['STUDENT']} />}>
-                            <Route path="/student/dashboard" element={<StudentDashboardPage />} />
+                            <Route path="/student/calendar" element={<StudentDashboardPage />} />
+                            <Route path="/student/dashboard" element={<Navigate to="/student/calendar" replace />} />
                             <Route path="/student/grades" element={<StudentGradesPage />} />
                             <Route path="/student/courses" element={<StudentCoursesPage />} />
                             <Route path="/student/classes" element={<StudentClassesPage />} />

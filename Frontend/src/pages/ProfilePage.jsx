@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PageSection from '../components/PageSection'
-import { deleteMyAccount, fetchStudentEventGradesData, updateMyProfile } from '../lib/authApi'
+import { deleteMyAccount, fetchStudentDashboardData, fetchStudentEventGradesData, updateMyProfile } from '../lib/authApi'
 import { clearAuthSession, getAuthUser, updateStoredAuthUser } from '../lib/authSession'
 
 export default function ProfilePage() {
@@ -18,8 +18,31 @@ export default function ProfilePage() {
     const [studentEvents, setStudentEvents] = useState([])
     const [isLoadingGrades, setIsLoadingGrades] = useState(false)
     const [gradesError, setGradesError] = useState('')
+    const [studentClasses, setStudentClasses] = useState([])
+    const [isLoadingStudentInfo, setIsLoadingStudentInfo] = useState(false)
+    const [studentInfoError, setStudentInfoError] = useState('')
 
     useEffect(() => {
+        const loadStudentInfo = async () => {
+            if (!initialUser?.id || initialUser.role !== 'STUDENT') {
+                return
+            }
+
+            setIsLoadingStudentInfo(true)
+            setStudentInfoError('')
+
+            try {
+                const data = await fetchStudentDashboardData({ studentId: initialUser.id })
+                setStudentClasses(data.classes)
+            } catch (loadError) {
+                setStudentInfoError(loadError.message)
+            } finally {
+                setIsLoadingStudentInfo(false)
+            }
+        }
+
+        loadStudentInfo()
+
         const loadGrades = async () => {
             if (!initialUser?.id || initialUser.role !== 'STUDENT') {
                 return
@@ -152,6 +175,37 @@ export default function ProfilePage() {
                     {isDeleting ? 'Suppression...' : 'Supprimer mon compte'}
                 </button>
             </form>
+
+            {initialUser?.role === 'STUDENT' ? (
+                <div className="mt-10 rounded-xl border border-primary-500/30 p-5">
+                    <h2 className="text-xl font-semibold">Mes classes et calendrier</h2>
+                    <p className="mt-1 text-sm text-gray-300">Informations de suivi de ta scolarite directement depuis ton profil.</p>
+
+                    {studentInfoError ? (
+                        <p className="mt-4 rounded-lg border border-red-400/50 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                            {studentInfoError}
+                        </p>
+                    ) : null}
+
+                    {isLoadingStudentInfo ? <p className="mt-4 text-sm text-gray-300">Chargement des informations...</p> : null}
+
+                    {!isLoadingStudentInfo && !studentInfoError && studentClasses.length === 0 ? (
+                        <p className="mt-4 text-sm text-gray-300">Tu n es inscrit a aucune classe pour le moment.</p>
+                    ) : null}
+
+                    {!isLoadingStudentInfo && !studentInfoError && studentClasses.length > 0 ? (
+                        <div className="mt-4 grid gap-3 md:grid-cols-2">
+                            {studentClasses.map((classItem) => (
+                                <article key={classItem.id} className="rounded-md border border-primary-500/20 bg-black/40 p-3">
+                                    <p className="font-medium text-white">{classItem.name}</p>
+                                    <p className="text-sm text-gray-300">Professeur: {classItem.professorPseudo}</p>
+                                    <p className="text-sm text-gray-300">{classItem.events?.length || 0} evenement(s) associe(s)</p>
+                                </article>
+                            ))}
+                        </div>
+                    ) : null}
+                </div>
+            ) : null}
 
             {initialUser?.role === 'STUDENT' ? (
                 <div className="mt-10 rounded-xl border border-primary-500/30 p-5">

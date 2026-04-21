@@ -35,8 +35,8 @@ export default function Navbar() {
                             </Link>
 
                             {user.role === 'STUDENT' ? (
-                                <Link to="/student/dashboard" className="px-3 py-2 text-primary-300 hover:text-primary-200 transition-colors">
-                                    Dashboard etudiant
+                                <Link to="/student/calendar" className="px-3 py-2 text-primary-300 hover:text-primary-200 transition-colors">
+                                    Calendrier etudiant
                                 </Link>
                             ) : null}
 

@@ -8,7 +8,7 @@ function getDashboardPathByRole(role) {
         return '/professor/dashboard'
     }
 
-    return '/student/dashboard'
+    return '/student/calendar'
 }
 
 export default function LoginPage() {
