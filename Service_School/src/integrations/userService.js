@@ -10,30 +10,30 @@ const USERS_QUERY = `
 `;
 
 export const fetchExistingProfessorIds = async () => {
-  try {
-    const response = await fetch(USER_SERVICE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ query: USERS_QUERY }),
-    });
+    try {
+        const response = await fetch(USER_SERVICE_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ query: USERS_QUERY }),
+        });
 
-    if (!response.ok) {
-      return null;
+        if (!response.ok) {
+            return null;
+        }
+
+        const payload = await response.json();
+        const users = payload?.data?.users;
+
+        if (!Array.isArray(users)) {
+            return null;
+        }
+
+        return users
+            .filter((user) => user.role === "PROFESSOR")
+            .map((user) => user.id);
+    } catch {
+        return null;
     }
-
-    const payload = await response.json();
-    const users = payload?.data?.users;
-
-    if (!Array.isArray(users)) {
-      return null;
-    }
-
-    return users
-      .filter((user) => user.role === "PROFESSOR")
-      .map((user) => user.id);
-  } catch {
-    return null;
-  }
 };
