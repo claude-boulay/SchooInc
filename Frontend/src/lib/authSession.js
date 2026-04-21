@@ -28,3 +28,18 @@ export function hasRole(role) {
     const user = getAuthUser()
     return user?.role === role
 }
+
+export function updateStoredAuthUser(partialUser) {
+    const currentUser = getAuthUser()
+    if (!currentUser) {
+        return null
+    }
+
+    const updatedUser = {
+        ...currentUser,
+        ...partialUser,
+    }
+
+    localStorage.setItem('schoolinc_user', JSON.stringify(updatedUser))
+    return updatedUser
+}

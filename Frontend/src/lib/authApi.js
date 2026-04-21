@@ -150,6 +150,29 @@ mutation RemoveStudentFromClass($input: RemoveStudentFromClassInput!) {
 }
 `
 
+const UPDATE_ME_MUTATION = `
+mutation UpdateMe($input: UpdateMeInput!) {
+  User {
+    updateMe(input: $input) {
+      id
+      email
+      pseudo
+      role
+      createdAt
+      updatedAt
+    }
+  }
+}
+`
+
+const DELETE_ME_MUTATION = `
+mutation DeleteMe {
+  User {
+    deleteMe
+  }
+}
+`
+
 async function executeGateway(query, variables) {
   const token = localStorage.getItem('schoolinc_token')
   const response = await fetch(GATEWAY_URL, {
@@ -266,4 +289,24 @@ export async function updateProfessorCourse({ id, name }) {
 export async function deleteProfessorCourse({ id }) {
   const data = await executeGateway(DELETE_COURSE_MUTATION, { id })
   return data.School.deleteCourse
+}
+
+export async function updateMyProfile({ email, pseudo }) {
+  const input = {}
+
+  if (email !== undefined) {
+    input.email = email
+  }
+
+  if (pseudo !== undefined) {
+    input.pseudo = pseudo
+  }
+
+  const data = await executeGateway(UPDATE_ME_MUTATION, { input })
+  return data.User.updateMe
+}
+
+export async function deleteMyAccount() {
+  const data = await executeGateway(DELETE_ME_MUTATION)
+  return data.User.deleteMe
 }

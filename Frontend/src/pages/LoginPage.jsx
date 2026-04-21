@@ -3,6 +3,14 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { loginUser, saveAuthSession } from '../lib/authApi'
 
+function getDashboardPathByRole(role) {
+    if (role === 'PROFESSOR') {
+        return '/professor/dashboard'
+    }
+
+    return '/student/dashboard'
+}
+
 export default function LoginPage() {
     const navigate = useNavigate()
     const [email, setEmail] = useState('')
@@ -18,7 +26,7 @@ export default function LoginPage() {
         try {
             const authPayload = await loginUser({ email, password })
             saveAuthSession(authPayload)
-            navigate('/')
+            navigate(getDashboardPathByRole(authPayload.user.role))
         } catch (submitError) {
             setError(submitError.message)
         } finally {
