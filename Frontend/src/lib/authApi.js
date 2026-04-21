@@ -41,6 +41,11 @@ query ProfessorDashboardData {
         name
         professorId
         studentCount
+        enrollments {
+          classId
+          studentId
+          enrolledAt
+        }
       }
     }
     courses {
@@ -137,6 +142,14 @@ mutation AddStudentToClass($input: AddStudentToClassInput!) {
 }
 `
 
+const REMOVE_STUDENT_FROM_CLASS_MUTATION = `
+mutation RemoveStudentFromClass($input: RemoveStudentFromClassInput!) {
+  School {
+    removeStudentFromClass(input: $input)
+  }
+}
+`
+
 async function executeGateway(query, variables) {
   const token = localStorage.getItem('schoolinc_token')
   const response = await fetch(GATEWAY_URL, {
@@ -219,6 +232,14 @@ export async function addStudentToProfessorClass({ classId, studentId }) {
   })
 
   return data.School.addStudentToClass
+}
+
+export async function removeStudentFromProfessorClass({ classId, studentId }) {
+  const data = await executeGateway(REMOVE_STUDENT_FROM_CLASS_MUTATION, {
+    input: { classId, studentId },
+  })
+
+  return data.School.removeStudentFromClass
 }
 
 export async function updateProfessorClass({ id, name }) {
