@@ -6,6 +6,7 @@ services:
       POSTGRES_PASSWORD: school_pass
       POSTGRES_DB: school_db
     volumes:
+      - db_school_data:/var/lib/postgresql/data
       - ./Service_School/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5433:5432"
@@ -22,6 +23,7 @@ services:
       POSTGRES_PASSWORD: auth_pass
       POSTGRES_DB: auth_db
     volumes:
+      - db_user_data:/var/lib/postgresql/data
       - ./Service_User/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5434:5432"
@@ -38,6 +40,7 @@ services:
       POSTGRES_PASSWORD: grading_pass
       POSTGRES_DB: grading_db
     volumes:
+      - db_grading_data:/var/lib/postgresql/data
       - ./Service_Grading/Init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5435:5432"
@@ -112,3 +115,8 @@ services:
         condition: service_started
     ports:
       - "4000:4000"
+
+volumes:
+  db_school_data:
+  db_user_data:
+  db_grading_data:

@@ -124,6 +124,55 @@ query StudentDashboardData {
 }
 `
 
+const PUBLIC_CLASSES_QUERY = `
+query PublicClassesData($sort: SortOrder) {
+  School {
+    classes(sort: $sort, limit: 100, offset: 0) {
+      items {
+        id
+        name
+        studentCount
+        enrollments {
+          studentId
+        }
+      }
+    }
+  }
+  User {
+    users {
+      id
+      pseudo
+      role
+    }
+  }
+}
+`
+
+const PUBLIC_COURSES_QUERY = `
+query PublicCoursesData {
+  School {
+    courses {
+      id
+      name
+      professorId
+    }
+    classes(sort: ASC, limit: 100, offset: 0) {
+      items {
+        id
+        name
+        events {
+          id
+          startTime
+          endTime
+          courseId
+          classId
+        }
+      }
+    }
+  }
+}
+`
+
 const CREATE_CALENDAR_EVENT_MUTATION = `
 mutation CreateCalendarEvent($input: CalendarEventCreateInput!) {
   School {
@@ -360,6 +409,60 @@ export async function fetchStudentDashboardData({ studentId }) {
     })
 
   return { classes }
+}
+
+export async function fetchPublicClassesData({ sort = 'ASC' } = {}) {
+  const data = await executeGateway(PUBLIC_CLASSES_QUERY, { sort })
+  const studentsById = new Map(
+    data.User.users
+      .filter((user) => user.role === 'STUDENT')
+      .map((student) => [student.id, student]),
+  )
+
+  const classes = data.School.classes.items.map((classItem) => {
+    const students = classItem.enrollments
+      .map((enrollment) => studentsById.get(enrollment.studentId))
+      .filter(Boolean)
+
+    return {
+      id: classItem.id,
+      name: classItem.name,
+      studentCount: classItem.studentCount,
+      students,
+    }
+  })
+
+  return { classes }
+}
+
+export async function fetchPublicCoursesData() {
+  const data = await executeGateway(PUBLIC_COURSES_QUERY)
+
+  const eventsByCourseId = new Map()
+  data.School.classes.items.forEach((classItem) => {
+    classItem.events.forEach((eventItem) => {
+      const existing = eventsByCourseId.get(eventItem.courseId) || []
+      existing.push({
+        id: eventItem.id,
+        startTime: eventItem.startTime,
+        endTime: eventItem.endTime,
+        classId: eventItem.classId,
+        className: classItem.name,
+      })
+      eventsByCourseId.set(eventItem.courseId, existing)
+    })
+  })
+
+  const courses = data.School.courses.map((courseItem) => ({
+    id: courseItem.id,
+    name: courseItem.name,
+    professorId: courseItem.professorId,
+    events: (eventsByCourseId.get(courseItem.id) || []).sort((a, b) =>
+      a.startTime.localeCompare(b.startTime),
+    ),
+  }))
+
+  return { courses }
 }
 
 export async function createProfessorClass({ name }) {
