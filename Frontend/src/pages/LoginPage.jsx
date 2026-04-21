@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { loginUser, saveAuthSession } from '../lib/authApi'
+import { loginUser, requestPasswordReset, saveAuthSession } from '../lib/authApi'
 
 function getDashboardPathByRole(role) {
     if (role === 'PROFESSOR') {
@@ -12,15 +12,18 @@ function getDashboardPathByRole(role) {
 }
 
 export default function LoginPage() {
+    const isDevMode = import.meta.env.DEV
     const navigate = useNavigate()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
+    const [info, setInfo] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     const handleSubmit = async (event) => {
         event.preventDefault()
         setError('')
+        setInfo('')
         setIsSubmitting(true)
 
         try {
@@ -31,6 +34,23 @@ export default function LoginPage() {
             setError(submitError.message)
         } finally {
             setIsSubmitting(false)
+        }
+    }
+
+    const handleDevForgotPassword = async () => {
+        setError('')
+        setInfo('')
+
+        if (!email.trim()) {
+            setError('Renseigne ton email pour generer un jeton de reinitialisation dev.')
+            return
+        }
+
+        try {
+            await requestPasswordReset({ email: email.trim() })
+            setInfo('Demande envoyee. En mode dev, le token est logge dans la console du serveur Service_User.')
+        } catch (requestError) {
+            setError(requestError.message)
         }
     }
 
@@ -79,6 +99,12 @@ export default function LoginPage() {
                         </p>
                     ) : null}
 
+                    {info ? (
+                        <p className="rounded-lg border border-primary-400/50 bg-primary-500/10 px-3 py-2 text-sm text-primary-200">
+                            {info}
+                        </p>
+                    ) : null}
+
                     <button
                         type="submit"
                         disabled={isSubmitting}
@@ -86,12 +112,29 @@ export default function LoginPage() {
                     >
                         {isSubmitting ? 'Connexion...' : 'Connexion'}
                     </button>
+
+                    {isDevMode ? (
+                        <button
+                            type="button"
+                            onClick={handleDevForgotPassword}
+                            className="w-full rounded-lg border border-primary-500/60 bg-black/40 px-4 py-3 text-sm font-semibold text-primary-300 transition-colors hover:border-primary-400 hover:text-primary-200"
+                        >
+                            Mot de passe oublie (dev)
+                        </button>
+                    ) : null}
                 </form>
 
                 <p className="mt-6 text-center text-sm text-gray-300">
                     Pas encore de compte ?{' '}
                     <Link to="/signup" className="font-semibold text-primary-400 hover:text-primary-300">
                         Inscription
+                    </Link>
+                </p>
+
+                <p className="mt-3 text-center text-sm text-gray-300">
+                    Tu as un token de reinitialisation ?{' '}
+                    <Link to="/reset-password" className="font-semibold text-primary-400 hover:text-primary-300">
+                        Reinitialiser le mot de passe
                     </Link>
                 </p>
 

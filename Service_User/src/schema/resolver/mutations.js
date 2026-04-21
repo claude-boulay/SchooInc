@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import {
 	createUser,
 	deleteUserById,
@@ -11,7 +12,10 @@ import {
 
 const JWT_SECRET = process.env.JWT_SECRET || "change-me-in-production";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1d";
+const RESET_TOKEN_SECRET = process.env.RESET_TOKEN_SECRET || `${JWT_SECRET}-password-reset`;
+const RESET_TOKEN_EXPIRES_IN = process.env.RESET_TOKEN_EXPIRES_IN || "15m";
 const BCRYPT_SALT_ROUNDS = Number(process.env.BCRYPT_SALT_ROUNDS || 12);
+const IS_DEV = process.env.NODE_ENV !== "production";
 
 const createAuthToken = (user) =>
 	jwt.sign(
@@ -75,6 +79,63 @@ export const mutations = {
 
 		const token = createAuthToken(user);
 		return { token, user };
+	},
+
+	requestPasswordReset: async (_, { input }) => {
+		const email = String(input.email || "").trim().toLowerCase();
+		const user = await findUserByEmail(email);
+
+		// Always return true to avoid account enumeration.
+		if (!user) {
+			return true;
+		}
+
+		const resetToken = jwt.sign(
+			{
+				sub: user.id,
+				email: user.email,
+				purpose: "password_reset",
+				jti: crypto.randomUUID(),
+			},
+			RESET_TOKEN_SECRET,
+			{ expiresIn: RESET_TOKEN_EXPIRES_IN }
+		);
+
+		if (IS_DEV) {
+			console.warn("[DEV ONLY] Password reset token generated");
+			console.info("User email:", user.email);
+			console.info("Reset token:", resetToken);
+		}
+
+		return true;
+	},
+
+	resetPassword: async (_, { input }) => {
+		const newPassword = String(input.newPassword || "");
+		if (newPassword.length < 6) {
+			throw new Error("Password must be at least 6 characters long");
+		}
+
+		let payload;
+		try {
+			payload = jwt.verify(input.token, RESET_TOKEN_SECRET);
+		} catch {
+			throw new Error("Invalid or expired reset token");
+		}
+
+		if (payload.purpose !== "password_reset") {
+			throw new Error("Invalid reset token purpose");
+		}
+
+		const user = await findUserById(payload.sub);
+		if (!user || user.email !== payload.email) {
+			throw new Error("User not found for reset token");
+		}
+
+		const hashedPassword = await bcrypt.hash(newPassword, BCRYPT_SALT_ROUNDS);
+		await updateUserById(user.id, { password: hashedPassword });
+
+		return true;
 	},
 
 	updateMe: async (_, { input }, context) => {

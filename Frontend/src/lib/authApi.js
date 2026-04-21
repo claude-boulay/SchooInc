@@ -32,6 +32,22 @@ mutation Register($input: RegisterInput!) {
 }
 `
 
+const REQUEST_PASSWORD_RESET_MUTATION = `
+mutation RequestPasswordReset($input: RequestPasswordResetInput!) {
+  User {
+    requestPasswordReset(input: $input)
+  }
+}
+`
+
+const RESET_PASSWORD_MUTATION = `
+mutation ResetPassword($input: ResetPasswordInput!) {
+  User {
+    resetPassword(input: $input)
+  }
+}
+`
+
 const PROFESSOR_DASHBOARD_QUERY = `
 query ProfessorDashboardData {
   School {
@@ -211,6 +227,22 @@ export async function registerUser({ email, pseudo, password, role }) {
   })
 
   return data.User.register
+}
+
+export async function requestPasswordReset({ email }) {
+  const data = await executeGateway(REQUEST_PASSWORD_RESET_MUTATION, {
+    input: { email },
+  })
+
+  return data.User.requestPasswordReset
+}
+
+export async function resetPassword({ token, newPassword }) {
+  const data = await executeGateway(RESET_PASSWORD_MUTATION, {
+    input: { token, newPassword },
+  })
+
+  return data.User.resetPassword
 }
 
 export function saveAuthSession(authPayload) {

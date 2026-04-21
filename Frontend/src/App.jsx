@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom'
 import Layout from './components/Layout'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
 import SignupPage from './pages/SignupPage'
 import ClassesPublicPage from './pages/ClassesPublicPage'
 import CoursesPublicPage from './pages/CoursesPublicPage'
@@ -34,6 +35,7 @@ function App() {
         <Router>
             <Routes>
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
 

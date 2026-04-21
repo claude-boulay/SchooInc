@@ -6,6 +6,15 @@ export const inputDefs = `
 		role: UserRole = STUDENT
 	}
 
+	input RequestPasswordResetInput {
+		email: String!
+	}
+
+	input ResetPasswordInput {
+		token: String!
+		newPassword: String!
+	}
+
 	input LoginInput {
 		email: String!
 		password: String!
