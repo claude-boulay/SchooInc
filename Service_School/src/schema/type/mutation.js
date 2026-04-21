@@ -10,5 +10,9 @@ export const mutationTypeDefs = `
     updateCourse(input: CourseUpdateInput!): Course!
     deleteCourse(id: ID!): Boolean!
     addCourseToClass(input: AddCourseToClassInput!): Boolean!
+
+    createCalendarEvent(input: CalendarEventCreateInput!): CalendarEvent!
+    updateCalendarEvent(input: CalendarEventUpdateInput!): CalendarEvent!
+    deleteCalendarEvent(id: ID!): Boolean!
   }
 `;

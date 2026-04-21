@@ -62,6 +62,15 @@ query ProfessorDashboardData {
           studentId
           enrolledAt
         }
+        events {
+          id
+          startTime
+          endTime
+          courseId
+          course {
+            name
+          }
+        }
       }
     }
     courses {
@@ -93,6 +102,15 @@ query StudentDashboardData {
           classId
           studentId
         }
+        events {
+          id
+          startTime
+          endTime
+          courseId
+          course {
+            name
+          }
+        }
       }
     }
   }
@@ -102,6 +120,34 @@ query StudentDashboardData {
       pseudo
       role
     }
+  }
+}
+`
+
+const CREATE_CALENDAR_EVENT_MUTATION = `
+mutation CreateCalendarEvent($input: CalendarEventCreateInput!) {
+  School {
+    createCalendarEvent(input: $input) {
+      id
+    }
+  }
+}
+`
+
+const UPDATE_CALENDAR_EVENT_MUTATION = `
+mutation UpdateCalendarEvent($input: CalendarEventUpdateInput!) {
+  School {
+    updateCalendarEvent(input: $input) {
+      id
+    }
+  }
+}
+`
+
+const DELETE_CALENDAR_EVENT_MUTATION = `
+mutation DeleteCalendarEvent($id: ID!) {
+  School {
+    deleteCalendarEvent(id: $id)
   }
 }
 `
@@ -309,6 +355,7 @@ export async function fetchStudentDashboardData({ studentId }) {
         name: classItem.name,
         professorId: classItem.professorId,
         professorPseudo: professor?.pseudo || 'Professeur non trouve',
+        events: classItem.events || [],
       }
     })
 
@@ -371,6 +418,25 @@ export async function updateProfessorCourse({ id, name }) {
 export async function deleteProfessorCourse({ id }) {
   const data = await executeGateway(DELETE_COURSE_MUTATION, { id })
   return data.School.deleteCourse
+}
+
+export async function createCalendarEvent({ startTime, endTime, courseId, classId }) {
+  const data = await executeGateway(CREATE_CALENDAR_EVENT_MUTATION, {
+    input: { startTime, endTime, courseId, classId },
+  })
+  return data.School.createCalendarEvent
+}
+
+export async function updateCalendarEvent({ id, startTime, endTime, courseId, classId }) {
+  const data = await executeGateway(UPDATE_CALENDAR_EVENT_MUTATION, {
+    input: { id, startTime, endTime, courseId, classId },
+  })
+  return data.School.updateCalendarEvent
+}
+
+export async function deleteCalendarEvent({ id }) {
+  const data = await executeGateway(DELETE_CALENDAR_EVENT_MUTATION, { id })
+  return data.School.deleteCalendarEvent
 }
 
 export async function updateMyProfile({ email, pseudo }) {

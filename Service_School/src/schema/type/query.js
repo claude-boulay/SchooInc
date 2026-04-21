@@ -10,5 +10,6 @@ export const queryTypeDefs = `
     courses: [Course!]!
     course(id: ID!): Course
     studentClass(studentId: ID!): Class
+    classCalendarEvents(classId: ID!): [CalendarEvent!]!
   }
 `;

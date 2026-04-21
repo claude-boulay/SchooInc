@@ -15,11 +15,25 @@ export const resolvers = {
     studentCount: async (schoolClass) => countStudentsInClass(schoolClass.id),
     enrollments: async (schoolClass) => listEnrollmentsByClassId(schoolClass.id),
     courses: async (schoolClass) => listCoursesByClassId(schoolClass.id),
+    events: async (schoolClass) => {
+      const { findCalendarEventsByClassId } = await import("../../db/models/calendar_events.model.js");
+      return findCalendarEventsByClassId(schoolClass.id);
+    },
   },
   ClassEnrollment: {
     enrolledAt: (enrollment) =>
       enrollment.enrolledAt instanceof Date
         ? enrollment.enrolledAt.toISOString()
         : enrollment.enrolledAt,
+  },
+  CalendarEvent: {
+    course: async (event) => {
+      const { findCourseById } = await import("../../db/models/courses.model.js");
+      return findCourseById(event.courseId);
+    },
+    class: async (event) => {
+      const { findClassById } = await import("../../db/models/classes.model.js");
+      return findClassById(event.classId);
+    },
   },
 };

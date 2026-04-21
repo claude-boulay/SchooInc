@@ -5,6 +5,7 @@ import {
   listClasses,
 } from "../../db/models/classes.model.js";
 import { findCourseById, listCourses } from "../../db/models/courses.model.js";
+import { findCalendarEventsByClassId } from "../../db/models/calendar_events.model.js";
 
 const normalizePagination = (limit, offset) => ({
   limit: Math.min(Math.max(limit ?? 20, 1), 100),
@@ -35,4 +36,6 @@ export const queries = {
   course: async (_, { id }) => findCourseById(id),
 
   studentClass: async (_, { studentId }) => findClassByStudentId(studentId),
+
+  classCalendarEvents: async (_, { classId }) => findCalendarEventsByClassId(classId),
 };

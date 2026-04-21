@@ -11,6 +11,7 @@ export const typeDefs = `
     studentCount: Int!
     enrollments: [ClassEnrollment!]!
     courses: [Course!]!
+    events: [CalendarEvent!]!
   }
 
   type ClassEnrollment {
@@ -31,6 +32,18 @@ export const typeDefs = `
     id: ID!
     name: String!
     professorId: ID!
+  }
+
+  type CalendarEvent {
+    id: ID!
+    startTime: String!
+    endTime: String!
+    courseId: ID!
+    classId: ID!
+    professorId: ID!
+    createdAt: String!
+    course: Course
+    class: Class
   }
 
   ${inputDefs}

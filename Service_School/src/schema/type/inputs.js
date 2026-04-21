@@ -31,4 +31,19 @@ export const inputDefs = `
     classId: ID!
     courseId: ID!
   }
+
+  input CalendarEventCreateInput {
+    startTime: String!
+    endTime: String!
+    courseId: ID!
+    classId: ID!
+  }
+
+  input CalendarEventUpdateInput {
+    id: ID!
+    startTime: String
+    endTime: String
+    courseId: ID
+    classId: ID
+  }
 `;

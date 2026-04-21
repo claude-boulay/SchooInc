@@ -60,6 +60,27 @@ export default function StudentDashboardPage() {
 
                             <p className="mt-4 text-xs uppercase tracking-wide text-primary-300">Prof referent</p>
                             <p className="mt-1 text-lg text-gray-100">{classItem.professorPseudo}</p>
+
+                            <div className="mt-6">
+                                <h3 className="text-sm uppercase tracking-wide text-primary-300 border-b border-primary-500/30 pb-2 mb-3">Calendrier ({classItem.events?.length || 0} evenements)</h3>
+                                {classItem.events && classItem.events.length > 0 ? (
+                                    <ul className="space-y-3">
+                                        {classItem.events.map((ev) => (
+                                            <li key={ev.id} className="bg-white/5 p-3 rounded border border-white/10">
+                                                <p className="font-semibold text-gray-100">{ev.course?.name || 'Cours inconnu'}</p>
+                                                <p className="text-sm text-gray-300 mt-1">
+                                                    Le {new Date(ev.startTime).toLocaleDateString()}
+                                                </p>
+                                                <p className="text-sm text-gray-400">
+                                                    De {new Date(ev.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} a {new Date(ev.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                                </p>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="text-xs text-gray-400">Aucun evenement prevu.</p>
+                                )}
+                            </div>
                         </article>
                     ))}
                 </div>

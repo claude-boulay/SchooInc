@@ -23,3 +23,13 @@ CREATE TABLE class_courses (
     course_id UUID REFERENCES courses(id) ON DELETE CASCADE,
     PRIMARY KEY (class_id, course_id)
 );
+
+CREATE TABLE calendar_events (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    start_time TIMESTAMP WITH TIME ZONE NOT NULL,
+    end_time TIMESTAMP WITH TIME ZONE NOT NULL,
+    course_id UUID NOT NULL REFERENCES courses(id) ON DELETE CASCADE,
+    class_id UUID NOT NULL REFERENCES classes(id) ON DELETE CASCADE,
+    professor_id UUID NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

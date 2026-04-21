@@ -188,4 +188,71 @@ export const mutations = {
       throw error;
     }
   },
+
+  createCalendarEvent: async (_, { input }, context) => {
+    ensureProfessorAuthenticated(context);
+
+    // Verify course ownership
+    const course = await findCourseById(input.courseId);
+    ensureCourseOwnedByProfessor(course, context.currentUser.id);
+
+    // Verify class ownership
+    const schoolClass = await findClassById(input.classId);
+    ensureClassOwnedByProfessor(schoolClass, context.currentUser.id);
+
+    const { createCalendarEvent } = await import("../../db/models/calendar_events.model.js");
+    return createCalendarEvent({
+      startTime: input.startTime,
+      endTime: input.endTime,
+      courseId: input.courseId,
+      classId: input.classId,
+      professorId: context.currentUser.id,
+    });
+  },
+
+  updateCalendarEvent: async (_, { input }, context) => {
+    ensureProfessorAuthenticated(context);
+
+    const { findCalendarEventById, updateCalendarEventById } = await import("../../db/models/calendar_events.model.js");
+    const event = await findCalendarEventById(input.id);
+    if (!event) {
+      throw new Error("Calendar event not found");
+    }
+    if (event.professorId !== context.currentUser.id) {
+      throw new Error("You can only modify your own calendar events");
+    }
+
+    if (input.courseId) {
+      const course = await findCourseById(input.courseId);
+      ensureCourseOwnedByProfessor(course, context.currentUser.id);
+    }
+    if (input.classId) {
+      const schoolClass = await findClassById(input.classId);
+      ensureClassOwnedByProfessor(schoolClass, context.currentUser.id);
+    }
+
+    return updateCalendarEventById({
+      id: input.id,
+      startTime: input.startTime,
+      endTime: input.endTime,
+      courseId: input.courseId,
+      classId: input.classId,
+    });
+  },
+
+  deleteCalendarEvent: async (_, { id }, context) => {
+    ensureProfessorAuthenticated(context);
+
+    const { findCalendarEventById, deleteCalendarEventById } = await import("../../db/models/calendar_events.model.js");
+    const event = await findCalendarEventById(id);
+    if (!event) {
+      throw new Error("Calendar event not found");
+    }
+    if (event.professorId !== context.currentUser.id) {
+      throw new Error("You can only delete your own calendar events");
+    }
+
+    const deleted = await deleteCalendarEventById(id);
+    return Boolean(deleted);
+  },
 };

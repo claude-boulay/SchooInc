@@ -10,6 +10,9 @@ import {
     removeStudentFromProfessorClass,
     updateProfessorClass,
     updateProfessorCourse,
+    createCalendarEvent,
+    updateCalendarEvent,
+    deleteCalendarEvent,
 } from '../lib/authApi'
 import { getAuthUser } from '../lib/authSession'
 
@@ -26,6 +29,11 @@ export default function ProfessorDashboardPage() {
     const [selectedCourseToEditId, setSelectedCourseToEditId] = useState('')
     const [updatedClassName, setUpdatedClassName] = useState('')
     const [updatedCourseName, setUpdatedCourseName] = useState('')
+    const [eventDate, setEventDate] = useState('')
+    const [eventStartTime, setEventStartTime] = useState('')
+    const [eventEndTime, setEventEndTime] = useState('')
+    const [eventCourseId, setEventCourseId] = useState('')
+    const [eventClassId, setEventClassId] = useState('')
     const [isLoading, setIsLoading] = useState(true)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState('')
@@ -70,15 +78,19 @@ export default function ProfessorDashboardPage() {
         if (ownedClasses.length > 0) {
             setSelectedClassId((previous) => (ownedClasses.some((item) => item.id === previous) ? previous : ownedClasses[0].id))
             setSelectedClassToEditId((previous) => (ownedClasses.some((item) => item.id === previous) ? previous : ownedClasses[0].id))
+            setEventClassId((previous) => (ownedClasses.some((item) => item.id === previous) ? previous : ownedClasses[0].id))
         } else {
             setSelectedClassId('')
             setSelectedClassToEditId('')
+            setEventClassId('')
         }
 
         if (ownedCourses.length > 0) {
             setSelectedCourseToEditId((previous) => (ownedCourses.some((item) => item.id === previous) ? previous : ownedCourses[0].id))
+            setEventCourseId((previous) => (ownedCourses.some((item) => item.id === previous) ? previous : ownedCourses[0].id))
         } else {
             setSelectedCourseToEditId('')
+            setEventCourseId('')
         }
 
         if (data.students.length > 0) {
@@ -244,6 +256,49 @@ export default function ProfessorDashboardPage() {
             await removeStudentFromProfessorClass({ classId, studentId })
             await reloadDashboardData()
             setSuccess('Etudiant retire de la classe avec succes.')
+        } catch (submitError) {
+            setError(submitError.message)
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    const handleCreateCalendarEvent = async (event) => {
+        event.preventDefault()
+        setError('')
+        setSuccess('')
+        setIsSubmitting(true)
+
+        try {
+            const startStr = new Date(`${eventDate}T${eventStartTime}:00`).toISOString()
+            const endStr = new Date(`${eventDate}T${eventEndTime}:00`).toISOString()
+            await createCalendarEvent({
+                startTime: startStr,
+                endTime: endStr,
+                courseId: eventCourseId,
+                classId: eventClassId,
+            })
+            setEventDate('')
+            setEventStartTime('')
+            setEventEndTime('')
+            await reloadDashboardData()
+            setSuccess('Evenement ajoute au calendrier avec succes.')
+        } catch (submitError) {
+            setError(submitError.message)
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    const handleDeleteCalendarEvent = async (eventId) => {
+        setError('')
+        setSuccess('')
+        setIsSubmitting(true)
+
+        try {
+            await deleteCalendarEvent({ id: eventId })
+            await reloadDashboardData()
+            setSuccess('Evenement supprime avec succes.')
         } catch (submitError) {
             setError(submitError.message)
         } finally {
@@ -508,6 +563,116 @@ export default function ProfessorDashboardPage() {
                         ))}
                     </ul>
                 ) : null}
+            </div>
+
+            <div className="mt-8 rounded-xl border border-primary-500/30 p-5">
+                <h2 className="text-xl font-semibold">Calendrier</h2>
+                <p className="mt-1 text-sm text-gray-300">Ajouter ou modifier des evenements.</p>
+
+                <form className="mt-4 grid gap-4" onSubmit={handleCreateCalendarEvent}>
+                    <div className="grid gap-4 md:grid-cols-2">
+                        <div>
+                            <label className="mb-2 block text-sm text-gray-200">Date</label>
+                            <input
+                                type="date"
+                                required
+                                value={eventDate}
+                                onChange={(e) => setEventDate(e.target.value)}
+                                className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="mb-2 block text-sm text-gray-200">Debut</label>
+                                <input
+                                    type="time"
+                                    required
+                                    value={eventStartTime}
+                                    onChange={(e) => setEventStartTime(e.target.value)}
+                                    className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                                />
+                            </div>
+                            <div>
+                                <label className="mb-2 block text-sm text-gray-200">Fin</label>
+                                <input
+                                    type="time"
+                                    required
+                                    value={eventEndTime}
+                                    onChange={(e) => setEventEndTime(e.target.value)}
+                                    className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                        <div>
+                            <label className="mb-2 block text-sm text-gray-200">Classe</label>
+                            <select
+                                required
+                                value={eventClassId}
+                                onChange={(e) => setEventClassId(e.target.value)}
+                                className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                            >
+                                {sortedClasses.map((cl) => <option key={cl.id} value={cl.id}>{cl.name}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label className="mb-2 block text-sm text-gray-200">Cours</label>
+                            <select
+                                required
+                                value={eventCourseId}
+                                onChange={(e) => setEventCourseId(e.target.value)}
+                                className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                            >
+                                {sortedCourses.map((co) => <option key={co.id} value={co.id}>{co.name}</option>)}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button
+                        type="submit"
+                        disabled={isSubmitting || !eventClassId || !eventCourseId || !eventDate || !eventStartTime || !eventEndTime}
+                        className="mt-2 rounded-lg bg-gradient-to-r from-primary-500 to-primary-400 px-4 py-3 text-left font-semibold inline-block w-max text-white"
+                    >
+                        Ajouter l evenement
+                    </button>
+                </form>
+
+                <div className="mt-8">
+                    <h3 className="font-semibold text-lg border-b border-primary-500/20 pb-2">Evenements a venir (par classe)</h3>
+                    {sortedClasses.length === 0 ? <p className="mt-3 text-sm text-gray-300">Aucune classe.</p> : null}
+                    {sortedClasses.map((cl) => {
+                        const events = cl.events || []
+                        if (events.length === 0) return null
+                        
+                        return (
+                            <div key={cl.id} className="mt-4">
+                                <h4 className="font-medium text-primary-300">{cl.name}</h4>
+                                <ul className="mt-2 space-y-2">
+                                    {events.map((ev) => (
+                                        <li key={ev.id} className="flex justify-between items-center bg-black/40 border border-primary-500/20 p-3 rounded-md text-sm">
+                                            <div>
+                                                <p className="font-semibold">{ev.course?.name || 'Cours inconnu'}</p>
+                                                <p className="text-gray-300">
+                                                    {new Date(ev.startTime).toLocaleDateString()} de {new Date(ev.startTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} a {new Date(ev.endTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                                </p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleDeleteCalendarEvent(ev.id)}
+                                                disabled={isSubmitting}
+                                                className="text-red-400 border border-red-500/30 hover:bg-red-500/10 px-3 py-1 rounded"
+                                            >
+                                                Supprimer
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )
+                    })}
+                </div>
             </div>
         </PageSection>
     )
