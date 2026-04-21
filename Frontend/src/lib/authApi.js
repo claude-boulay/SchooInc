@@ -81,6 +81,31 @@ query ProfessorDashboardData {
 }
 `
 
+const STUDENT_DASHBOARD_QUERY = `
+query StudentDashboardData {
+  School {
+    classes(sort: ASC, limit: 100, offset: 0) {
+      items {
+        id
+        name
+        professorId
+        enrollments {
+          classId
+          studentId
+        }
+      }
+    }
+  }
+  User {
+    users {
+      id
+      pseudo
+      role
+    }
+  }
+}
+`
+
 const CREATE_CLASS_MUTATION = `
 mutation CreateClass($input: ClassCreateInput!) {
   School {
@@ -263,6 +288,31 @@ export async function fetchProfessorDashboardData() {
     courses: data.School.courses,
     students: data.User.users.filter((user) => user.role === 'STUDENT'),
   }
+}
+
+export async function fetchStudentDashboardData({ studentId }) {
+  const data = await executeGateway(STUDENT_DASHBOARD_QUERY)
+  const professorsById = new Map(
+    data.User.users
+      .filter((user) => user.role === 'PROFESSOR')
+      .map((professor) => [professor.id, professor]),
+  )
+
+  const classes = data.School.classes.items
+    .filter((classItem) =>
+      classItem.enrollments.some((enrollment) => enrollment.studentId === studentId),
+    )
+    .map((classItem) => {
+      const professor = professorsById.get(classItem.professorId)
+      return {
+        id: classItem.id,
+        name: classItem.name,
+        professorId: classItem.professorId,
+        professorPseudo: professor?.pseudo || 'Professeur non trouve',
+      }
+    })
+
+  return { classes }
 }
 
 export async function createProfessorClass({ name }) {
