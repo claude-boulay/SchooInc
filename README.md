@@ -149,6 +149,7 @@ Variables principales:
 - Read users/user/me
 - Update self uniquement (`updateMe`)
 - Delete self uniquement (`deleteMe`)
+- Reset password par token signe (`forgotPassword` / `resetPassword`)
 
 ### 7.2 Authentication
 
@@ -262,24 +263,26 @@ mutation GradeEvent($input: GradeEventBatchInput!) {
 
 ## 9. Tests unitaires
 
-Le sujet impose des tests sur les fonctionnalites principales.
+Les tests ciblent le coeur metier du grading (resolvers GraphQL + regles d autorisation). Ils utilisent `vitest` avec mocks sur la couche modele, ce qui garantit qu on teste la logique applicative sans dependre d une base.
 
-Commande par service:
+Lancement :
 
 ```bash
-cd Service_User && npm test
-cd Service_School && npm test
 cd Service_Grading && npm test
 ```
 
-Plan :
-1. register cree un user et retourne un token
-2. login refuse mauvais mot de passe
-3. updateMe modifie uniquement l utilisateur courant
-4. deleteMe supprime uniquement l utilisateur courant
-5. createClass refuse un non-professeur
-6. addStudentToClass bloque au dela de 30 etudiants
-7. deleteClass refuse si etudiants inscrits
-8. createGrade refuse un non-professeur
-9. createGradesForEvent cree des notes pour plusieurs etudiants
-10. courseStats retourne average/median/min/max corrects
+Couverture actuelle (10 cas, `Service_Grading/src/schema/resolver/*.test.js`) :
+
+Queries :
+1. `myGrades` refuse un appel non authentifie
+2. `myGrades` regroupe correctement les notes par cours
+3. `gradesByStudent` refuse un role non professeur
+4. `gradesByStudent` retourne les notes pour un professeur
+5. `classStats` refuse un role non professeur
+
+Mutations :
+6. `createGrade` refuse un role non professeur
+7. `createGrade` rejette une note hors de l intervalle 0-20
+8. `createGradesForEvent` refuse un batch vide
+9. `updateGrade` rejette une note inconnue
+10. `deleteGrade` supprime bien une note appartenant au professeur courant
