@@ -38,6 +38,35 @@ export default function ProfessorGradesPage() {
         [students],
     )
 
+    const coursesById = useMemo(
+        () => new Map(courses.map((courseItem) => [courseItem.id, courseItem])),
+        [courses],
+    )
+
+    const classStatsByCourse = useMemo(() => {
+        const byCourse = new Map()
+        classView.grades.forEach((gradeItem) => {
+            const entry = byCourse.get(gradeItem.courseId) || {
+                courseId: gradeItem.courseId,
+                courseName: coursesById.get(gradeItem.courseId)?.name || gradeItem.courseId,
+                values: [],
+            }
+            entry.values.push(Number(gradeItem.value))
+            byCourse.set(gradeItem.courseId, entry)
+        })
+
+        return Array.from(byCourse.values())
+            .map((entry) => ({
+                courseId: entry.courseId,
+                courseName: entry.courseName,
+                count: entry.values.length,
+                average: entry.values.reduce((sum, value) => sum + value, 0) / entry.values.length,
+                minGrade: Math.min(...entry.values),
+                maxGrade: Math.max(...entry.values),
+            }))
+            .sort((a, b) => a.courseName.localeCompare(b.courseName))
+    }, [classView.grades, coursesById])
+
     useEffect(() => {
         const loadBaseData = async () => {
             setIsLoading(true)
@@ -222,8 +251,43 @@ export default function ProfessorGradesPage() {
                                 <option key={classItem.id} value={classItem.id}>{classItem.name}</option>
                             ))}
                         </select>
-                        {renderStats(classView.stats)}
-                        {renderGrades(classView.grades)}
+
+                        <div className="mt-4">
+                            <h3 className="text-sm font-semibold uppercase tracking-wide text-primary-200">
+                                Moyenne globale de la classe
+                            </h3>
+                            {renderStats(classView.stats)}
+                        </div>
+
+                        <div className="mt-5">
+                            <h3 className="text-sm font-semibold uppercase tracking-wide text-primary-200">
+                                Detail par cours
+                            </h3>
+                            {classStatsByCourse.length === 0 ? (
+                                <p className="mt-2 text-sm text-gray-400">Aucune note pour cette classe.</p>
+                            ) : (
+                                <ul className="mt-3 grid gap-2 md:grid-cols-2">
+                                    {classStatsByCourse.map((entry) => (
+                                        <li key={entry.courseId} className="rounded-md border border-primary-500/20 bg-black/50 p-3">
+                                            <p className="font-semibold text-white">{entry.courseName}</p>
+                                            <div className="mt-1 grid grid-cols-2 gap-1 text-xs text-gray-200 md:grid-cols-4">
+                                                <p>Moyenne: <span className="font-semibold text-white">{entry.average.toFixed(2)}</span></p>
+                                                <p>Min: <span className="font-semibold text-white">{entry.minGrade}</span></p>
+                                                <p>Max: <span className="font-semibold text-white">{entry.maxGrade}</span></p>
+                                                <p>Nb: <span className="font-semibold text-white">{entry.count}</span></p>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+
+                        <div className="mt-5">
+                            <h3 className="text-sm font-semibold uppercase tracking-wide text-primary-200">
+                                Detail des notes
+                            </h3>
+                            {renderGrades(classView.grades)}
+                        </div>
                     </section>
                 </div>
             ) : null}
