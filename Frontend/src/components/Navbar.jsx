@@ -64,22 +64,6 @@ export default function Navbar() {
                                                 Dashboard
                                             </Link>
                                             <Link
-                                                to="/professor/classes"
-                                                onClick={() => setShowProfMenu(false)}
-                                                className={`block px-4 py-3 text-sm hover:bg-primary-500/20 transition-colors ${location.pathname === '/professor/classes' ? 'bg-primary-500/10 text-primary-200' : 'text-gray-200'
-                                                    }`}
-                                            >
-                                                Mes Classes
-                                            </Link>
-                                            <Link
-                                                to="/professor/courses"
-                                                onClick={() => setShowProfMenu(false)}
-                                                className={`block px-4 py-3 text-sm hover:bg-primary-500/20 transition-colors ${location.pathname === '/professor/courses' ? 'bg-primary-500/10 text-primary-200' : 'text-gray-200'
-                                                    }`}
-                                            >
-                                                Mes Cours
-                                            </Link>
-                                            <Link
                                                 to="/professor/grades"
                                                 onClick={() => setShowProfMenu(false)}
                                                 className={`block px-4 py-3 text-sm hover:bg-primary-500/20 transition-colors border-t border-primary-500/20 ${location.pathname === '/professor/grades' ? 'bg-primary-500/10 text-primary-200' : 'text-gray-200'

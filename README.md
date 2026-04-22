@@ -32,8 +32,10 @@ Bases de donnees:
 - grading_db (grades)
 
 Important:
-- Les donnees Postgres sont persistantes via volumes Docker nommes.
+- Les donnees Postgres sont persistantes via volumes Docker nommes (`db_school_data`, `db_user_data`, `db_grading_data`).
+- Un `docker compose down` ou `docker compose up --build` preserve les donnees.
 - `docker compose down -v` supprime volontairement les volumes et donc les donnees.
+- Au boot de `Service_Grading`, une synchronisation des tables miroirs est faite depuis `Service_School` (enrollments + courses). Si `Service_School` est inaccessible, la sync est skip et aucune donnee n est modifiee (protection anti-wipe).
 
 ## 3. Prerequis
 
@@ -62,7 +64,7 @@ docker compose down
 ```
 
 URLs utiles:
-- Frontend (Vite): http://localhost:5173
+- Frontend (Vite): http://localhost:3000
 - Gateway GraphQL: http://localhost:4000/graphql
 - Service User: http://localhost:4001/graphql
 - Service School: http://localhost:4002/graphql

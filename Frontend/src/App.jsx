@@ -11,8 +11,6 @@ import StudentGradesPage from './pages/StudentGradesPage'
 import StudentCoursesPage from './pages/StudentCoursesPage'
 import StudentClassesPage from './pages/StudentClassesPage'
 import ProfessorDashboardPage from './pages/ProfessorDashboardPage'
-import ProfessorClassesPage from './pages/ProfessorClassesPage'
-import ProfessorCoursesPage from './pages/ProfessorCoursesPage'
 import ProfessorGradesPage from './pages/ProfessorGradesPage'
 import ProfilePage from './pages/ProfilePage'
 import ChangePasswordPage from './pages/ChangePasswordPage'
@@ -58,8 +56,6 @@ function App() {
 
                         <Route element={<RoleRoute allowedRoles={['PROFESSOR']} />}>
                             <Route path="/professor/dashboard" element={<ProfessorDashboardPage />} />
-                            <Route path="/professor/classes" element={<ProfessorClassesPage />} />
-                            <Route path="/professor/courses" element={<ProfessorCoursesPage />} />
                             <Route path="/professor/grades" element={<ProfessorGradesPage />} />
                         </Route>
                     </Route>
