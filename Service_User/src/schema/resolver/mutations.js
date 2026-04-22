@@ -176,12 +176,12 @@ export const mutations = {
 		const userRole = context.currentUser.role;
 
 		const deletedUser = await deleteUserById(userId);
-		
+
 		// Delete grades if this is a professor
 		if (deletedUser && userRole === "PROFESSOR") {
 			await deleteProfessorGradesInGradingService(userId);
 		}
-		
+
 		return Boolean(deletedUser);
 	},
 };

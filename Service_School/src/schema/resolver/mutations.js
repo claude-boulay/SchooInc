@@ -173,12 +173,12 @@ export const mutations = {
     ensureCourseOwnedByProfessor(course, context.currentUser.id);
 
     const deleted = await deleteCourseById(id);
-    
+
     // Delete grades for this course in grading service
     if (deleted) {
       await deleteCourseGradesInGradingService(id);
     }
-    
+
     return Boolean(deleted);
   },
 

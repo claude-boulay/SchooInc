@@ -1,8 +1,8 @@
 import { Pool } from "pg";
 import { query as gradingQuery } from "./db.js";
 import {
-  cleanupGradesForInvalidCourses,
-  deleteGradesByProfessorId,
+    cleanupGradesForInvalidCourses,
+    deleteGradesByProfessorId,
 } from "./models/grades.model.js";
 
 // Fetch enrollment/course data from Service_School via GraphQL
