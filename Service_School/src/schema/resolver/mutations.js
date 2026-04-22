@@ -16,6 +16,10 @@ import {
   findCourseById,
   updateCourseById,
 } from "../../db/models/courses.model.js";
+import {
+  deleteCourseGradesInGradingService,
+  deleteProfessorGradesInGradingService,
+} from "../../integrations/gradingService.js";
 
 const ensureProfessorAuthenticated = (context) => {
   if (!context.currentUser?.id) {
@@ -169,6 +173,12 @@ export const mutations = {
     ensureCourseOwnedByProfessor(course, context.currentUser.id);
 
     const deleted = await deleteCourseById(id);
+    
+    // Delete grades for this course in grading service
+    if (deleted) {
+      await deleteCourseGradesInGradingService(id);
+    }
+    
     return Boolean(deleted);
   },
 

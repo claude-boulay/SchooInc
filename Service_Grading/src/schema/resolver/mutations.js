@@ -2,6 +2,8 @@ import {
   createGradesForEventBatch,
   createGrade,
   deleteGradeById,
+  deleteGradesByCourseId,
+  deleteGradesByProfessorId,
   findGradeById,
   updateGradeById,
 } from "../../db/models/grades.model.js";
@@ -112,5 +114,17 @@ export const mutations = {
 
     const deleted = await deleteGradeById(id);
     return Boolean(deleted);
+  },
+
+  // Called from Service_School when a course is deleted
+  deleteCourseGrades: async (_, { courseId }) => {
+    const deleted = await deleteGradesByCourseId(courseId);
+    return { success: true, deletedCount: deleted };
+  },
+
+  // Called from Service_School when a professor is deleted
+  deleteProfessorGrades: async (_, { professorId }) => {
+    const deleted = await deleteGradesByProfessorId(professorId);
+    return { success: true, deletedCount: deleted };
   },
 };

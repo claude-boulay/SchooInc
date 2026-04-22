@@ -1,5 +1,9 @@
 import { Pool } from "pg";
 import { query as gradingQuery } from "./db.js";
+import {
+  cleanupGradesForInvalidCourses,
+  deleteGradesByProfessorId,
+} from "./models/grades.model.js";
 
 // Fetch enrollment/course data from Service_School via GraphQL
 const fetchSchoolDataViaGraphQL = async () => {
@@ -19,6 +23,11 @@ const fetchSchoolDataViaGraphQL = async () => {
             classCourses {
               classId
               courseId
+            }
+            courses {
+              id
+              name
+              professorId
             }
           }
         }`
@@ -90,7 +99,49 @@ export const syncSchoolData = async () => {
     console.log("🔄 Syncing school data into grading service...");
     await syncClassEnrollmentsFromSchool();
     await syncClassCoursesFromSchool();
+    await cleanupOrphanGrades();
     console.log("✓ School data sync complete");
+};
+
+export const cleanupOrphanGrades = async () => {
+    try {
+        const schoolData = await fetchSchoolDataViaGraphQL();
+        const courses = schoolData.courses || [];
+
+        // Get valid course IDs with professors
+        const validCourseIds = courses
+            .filter((c) => c.professorId !== null && c.professorId !== undefined)
+            .map((c) => c.id);
+
+        // Find orphaned professors (courses with no professor_id)
+        const orphanedProfessorIds = new Set();
+        const result = await gradingQuery(
+            "SELECT DISTINCT professor_id FROM grades WHERE professor_id IS NOT NULL"
+        );
+
+        for (const row of result.rows) {
+            const professorExists = courses.some((c) => c.professorId === row.professor_id);
+            if (!professorExists) {
+                orphanedProfessorIds.add(row.professor_id);
+            }
+        }
+
+        // Delete grades for orphaned professors
+        for (const professorId of orphanedProfessorIds) {
+            const deletedCount = await deleteGradesByProfessorId(professorId);
+            if (deletedCount > 0) {
+                console.log(`✓ Deleted ${deletedCount} grades for orphaned professor ${professorId}`);
+            }
+        }
+
+        // Cleanup grades for invalid courses (courses without professors or deleted courses)
+        const deletedCount = await cleanupGradesForInvalidCourses(validCourseIds);
+        if (deletedCount > 0) {
+            console.log(`✓ Deleted ${deletedCount} grades for invalid/orphaned courses`);
+        }
+    } catch (error) {
+        console.error("Error cleaning up orphan grades:", error);
+    }
 };
 
 export const closeSchoolPool = async () => {

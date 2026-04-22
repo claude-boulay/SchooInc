@@ -4,5 +4,7 @@ export const mutationTypeDefs = `
     createGradesForEvent(input: GradeEventBatchInput!): [Grade!]!
     updateGrade(input: UpdateGradeInput!): Grade!
     deleteGrade(id: ID!): Boolean!
+    deleteCourseGrades(courseId: ID!): DeleteResult!
+    deleteProfessorGrades(professorId: ID!): DeleteResult!
   }
 `;

@@ -29,6 +29,11 @@ export const typeDefs = `
     grades: [Grade!]!
   }
 
+  type DeleteResult {
+    success: Boolean!
+    deletedCount: Int!
+  }
+
   ${inputDefs}
   ${queryTypeDefs}
   ${mutationTypeDefs}

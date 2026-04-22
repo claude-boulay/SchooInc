@@ -9,6 +9,7 @@ import {
 	findUserByPseudo,
 	updateUserById,
 } from "../../db/models/users.model.js";
+import { deleteProfessorGradesInGradingService } from "../../integrations/gradingService.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "change-me-in-production";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1d";
@@ -171,7 +172,16 @@ export const mutations = {
 	deleteMe: async (_, __, context) => {
 		ensureAuthenticated(context);
 
-		const deletedUser = await deleteUserById(context.currentUser.id);
+		const userId = context.currentUser.id;
+		const userRole = context.currentUser.role;
+
+		const deletedUser = await deleteUserById(userId);
+		
+		// Delete grades if this is a professor
+		if (deletedUser && userRole === "PROFESSOR") {
+			await deleteProfessorGradesInGradingService(userId);
+		}
+		
 		return Boolean(deletedUser);
 	},
 };

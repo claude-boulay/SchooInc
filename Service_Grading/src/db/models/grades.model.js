@@ -250,3 +250,36 @@ export const getGradeStatsForClass = async (classId) => {
     count: row.count || 0,
   };
 };
+
+export const deleteGradesByCourseId = async (courseId) => {
+  const result = await query(
+    "DELETE FROM grades WHERE course_id = $1 RETURNING id",
+    [courseId]
+  );
+  return result.rowCount;
+};
+
+export const deleteGradesByProfessorId = async (professorId) => {
+  const result = await query(
+    "DELETE FROM grades WHERE professor_id = $1 RETURNING id",
+    [professorId]
+  );
+  return result.rowCount;
+};
+
+export const cleanupGradesForInvalidCourses = async (validCourseIds) => {
+  if (validCourseIds.length === 0) {
+    // Delete all grades if no valid courses
+    const result = await query("DELETE FROM grades RETURNING id");
+    return result.rowCount;
+  }
+
+  // Delete grades for courses that are not in the valid list
+  const result = await query(
+    "DELETE FROM grades WHERE course_id NOT IN (" +
+    validCourseIds.map((_, i) => `$${i + 1}`).join(",") +
+    ") RETURNING id",
+    validCourseIds
+  );
+  return result.rowCount;
+};

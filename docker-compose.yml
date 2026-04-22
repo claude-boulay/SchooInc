@@ -59,6 +59,7 @@ services:
     environment:
       DB_HOST: db-user
       DB_PORT: 5432
+      GRADING_SERVICE_URL: http://service-grading:4003/graphql
     depends_on:
       db-user:
         condition: service_healthy
@@ -75,6 +76,7 @@ services:
       DB_HOST: db-school
       DB_PORT: 5432
       USER_SERVICE_URL: http://service-user:4001/graphql
+      GRADING_SERVICE_URL: http://service-grading:4003/graphql
     depends_on:
       db-school:
         condition: service_healthy
