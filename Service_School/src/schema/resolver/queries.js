@@ -13,6 +13,8 @@ import {
   listCourses,
 } from "../../db/models/courses.model.js";
 import { findCalendarEventsByClassId } from "../../db/models/calendar_events.model.js";
+import { listAllEnrollments } from "../../db/models/classes_enrollments.model.js";
+import { listAllClassCourses } from "../../db/models/classes_courses.model.js";
 import { fetchExistingProfessorIds } from "../../integrations/userService.js";
 
 const normalizePagination = (limit, offset) => ({
@@ -95,4 +97,8 @@ export const queries = {
   studentClass: async (_, { studentId }) => findClassByStudentId(studentId),
 
   classCalendarEvents: async (_, { classId }) => findCalendarEventsByClassId(classId),
+
+  classEnrollments: async () => listAllEnrollments(),
+
+  classCourses: async () => listAllClassCourses(),
 };

@@ -57,3 +57,15 @@ export const listEnrollmentsByClassId = async (classId) => {
 
 	return result.rows.map(mapEnrollment);
 };
+
+export const listAllEnrollments = async () => {
+	const result = await query(
+		`
+			SELECT ${ENROLLMENT_COLUMNS}
+			FROM class_enrollments
+			ORDER BY class_id, enrolled_at DESC
+		`
+	);
+
+	return result.rows.map(mapEnrollment);
+};

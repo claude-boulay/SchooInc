@@ -5,6 +5,7 @@ import cors from "cors";
 import express from "express";
 import jwt from "jsonwebtoken";
 import { ensureSchema, healthcheckDb } from "./db/db.js";
+import { syncSchoolData } from "./db/sync.js";
 import { resolvers } from "./schema/resolver/resolvers.js";
 import { typeDefs } from "./schema/schema.js";
 
@@ -37,6 +38,7 @@ const getCurrentUser = (authorizationHeader) => {
 const app = express();
 const server = new ApolloServer({ typeDefs, resolvers });
 await ensureSchema();
+await syncSchoolData();
 await server.start();
 
 app.use(

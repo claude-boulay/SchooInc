@@ -20,6 +20,11 @@ export const typeDefs = `
     enrolledAt: String!
   }
 
+  type ClassCourse {
+    classId: ID!
+    courseId: ID!
+  }
+
   type ClassPage {
     items: [Class!]!
     total: Int!

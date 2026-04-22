@@ -61,7 +61,9 @@ export const listGradesByCourse = async (courseId) => {
 export const listGradesByClass = async (classId) => {
   const result = await query(
     `
-      SELECT g.${GRADE_COLUMNS.split(",").join(", g.")}
+      SELECT
+        g.id, g.value, g.student_id, g.course_id, g.event_id,
+        g.professor_id, g.comment, g.created_at, g.updated_at
       FROM grades g
       INNER JOIN class_enrollments ce ON g.student_id = ce.student_id
       INNER JOIN class_courses cc ON ce.class_id = cc.class_id AND g.course_id = cc.course_id

@@ -32,3 +32,18 @@ export const listCoursesByClassId = async (classId) => {
     professorId: row.professor_id,
   }));
 };
+
+export const listAllClassCourses = async () => {
+  const result = await query(
+    `
+      SELECT class_id, course_id
+      FROM class_courses
+      ORDER BY class_id, course_id
+    `
+  );
+
+  return result.rows.map((row) => ({
+    classId: row.class_id,
+    courseId: row.course_id,
+  }));
+};

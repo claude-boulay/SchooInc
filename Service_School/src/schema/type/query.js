@@ -11,5 +11,7 @@ export const queryTypeDefs = `
     course(id: ID!): Course
     studentClass(studentId: ID!): Class
     classCalendarEvents(classId: ID!): [CalendarEvent!]!
+    classEnrollments: [ClassEnrollment!]!
+    classCourses: [ClassCourse!]!
   }
 `;

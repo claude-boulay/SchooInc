@@ -90,6 +90,7 @@ services:
     environment:
       DB_HOST: db-grading
       DB_PORT: 5432
+      SCHOOL_SERVICE_URL: http://service-school:4002/graphql
     depends_on:
       db-grading:
         condition: service_healthy

@@ -227,6 +227,75 @@ mutation CreateGradesForEvent($input: GradeEventBatchInput!) {
 }
 `
 
+const PROFESSOR_GRADES_BY_STUDENT_QUERY = `
+query ProfessorGradesByStudent($studentId: ID!, $courseId: ID) {
+  Grading {
+    gradesByStudent(studentId: $studentId) {
+      id
+      value
+      studentId
+      courseId
+      eventId
+      comment
+      createdAt
+    }
+    studentStats(studentId: $studentId, courseId: $courseId) {
+      average
+      median
+      minGrade
+      maxGrade
+      count
+    }
+  }
+}
+`
+
+const PROFESSOR_GRADES_BY_COURSE_QUERY = `
+query ProfessorGradesByCourse($courseId: ID!) {
+  Grading {
+    gradesByCourse(courseId: $courseId) {
+      id
+      value
+      studentId
+      courseId
+      eventId
+      comment
+      createdAt
+    }
+    courseStats(courseId: $courseId) {
+      average
+      median
+      minGrade
+      maxGrade
+      count
+    }
+  }
+}
+`
+
+const PROFESSOR_GRADES_BY_CLASS_QUERY = `
+query ProfessorGradesByClass($classId: ID!) {
+  Grading {
+    gradesByClass(classId: $classId) {
+      id
+      value
+      studentId
+      courseId
+      eventId
+      comment
+      createdAt
+    }
+    classStats(classId: $classId) {
+      average
+      median
+      minGrade
+      maxGrade
+      count
+    }
+  }
+}
+`
+
 const CREATE_CALENDAR_EVENT_MUTATION = `
 mutation CreateCalendarEvent($input: CalendarEventCreateInput!) {
   School {
@@ -570,6 +639,40 @@ export async function createEventGradesBatch({ eventId, courseId, grades }) {
   })
 
   return data.Grading.createGradesForEvent
+}
+
+export async function fetchProfessorGradesByStudent({ studentId, courseId }) {
+  const data = await executeGateway(PROFESSOR_GRADES_BY_STUDENT_QUERY, {
+    studentId,
+    courseId: courseId || null,
+  })
+
+  return {
+    grades: data.Grading.gradesByStudent,
+    stats: data.Grading.studentStats,
+  }
+}
+
+export async function fetchProfessorGradesByCourse({ courseId }) {
+  const data = await executeGateway(PROFESSOR_GRADES_BY_COURSE_QUERY, {
+    courseId,
+  })
+
+  return {
+    grades: data.Grading.gradesByCourse,
+    stats: data.Grading.courseStats,
+  }
+}
+
+export async function fetchProfessorGradesByClass({ classId }) {
+  const data = await executeGateway(PROFESSOR_GRADES_BY_CLASS_QUERY, {
+    classId,
+  })
+
+  return {
+    grades: data.Grading.gradesByClass,
+    stats: data.Grading.classStats,
+  }
 }
 
 export async function createProfessorClass({ name }) {

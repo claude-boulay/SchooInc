@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useState } from 'react'
 import { clearAuthSession, getAuthUser } from '../lib/authSession'
 
 export default function Navbar() {
     const navigate = useNavigate()
+    const location = useLocation()
     const user = getAuthUser()
+    const [showProfMenu, setShowProfMenu] = useState(false)
 
     const handleLogout = () => {
         clearAuthSession()
@@ -41,9 +44,52 @@ export default function Navbar() {
                             ) : null}
 
                             {user.role === 'PROFESSOR' ? (
-                                <Link to="/professor/dashboard" className="px-3 py-2 text-primary-300 hover:text-primary-200 transition-colors">
-                                    Dashboard professeur
-                                </Link>
+                                <div className="relative group">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowProfMenu(!showProfMenu)}
+                                        className="px-3 py-2 text-primary-300 hover:text-primary-200 transition-colors flex items-center gap-1"
+                                    >
+                                        Professeur
+                                        <span className={`transition-transform ${showProfMenu ? 'rotate-180' : ''}`}>▼</span>
+                                    </button>
+                                    {showProfMenu && (
+                                        <div className="absolute top-full mt-1 right-0 bg-black/95 border border-primary-500/30 rounded-lg shadow-lg z-50 min-w-[200px]">
+                                            <Link
+                                                to="/professor/dashboard"
+                                                onClick={() => setShowProfMenu(false)}
+                                                className={`block px-4 py-3 text-sm hover:bg-primary-500/20 transition-colors ${location.pathname === '/professor/dashboard' ? 'bg-primary-500/10 text-primary-200' : 'text-gray-200'
+                                                    }`}
+                                            >
+                                                Dashboard
+                                            </Link>
+                                            <Link
+                                                to="/professor/classes"
+                                                onClick={() => setShowProfMenu(false)}
+                                                className={`block px-4 py-3 text-sm hover:bg-primary-500/20 transition-colors ${location.pathname === '/professor/classes' ? 'bg-primary-500/10 text-primary-200' : 'text-gray-200'
+                                                    }`}
+                                            >
+                                                Mes Classes
+                                            </Link>
+                                            <Link
+                                                to="/professor/courses"
+                                                onClick={() => setShowProfMenu(false)}
+                                                className={`block px-4 py-3 text-sm hover:bg-primary-500/20 transition-colors ${location.pathname === '/professor/courses' ? 'bg-primary-500/10 text-primary-200' : 'text-gray-200'
+                                                    }`}
+                                            >
+                                                Mes Cours
+                                            </Link>
+                                            <Link
+                                                to="/professor/grades"
+                                                onClick={() => setShowProfMenu(false)}
+                                                className={`block px-4 py-3 text-sm hover:bg-primary-500/20 transition-colors border-t border-primary-500/20 ${location.pathname === '/professor/grades' ? 'bg-primary-500/10 text-primary-200' : 'text-gray-200'
+                                                    }`}
+                                            >
+                                                Gestion des Notes
+                                            </Link>
+                                        </div>
+                                    )}
+                                </div>
                             ) : null}
 
                             <button

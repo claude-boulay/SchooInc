@@ -11,6 +11,9 @@
     "start": "node src/index.js",
     "dev": "node --watch src/index.js"
   },
+  "devDependencies": {
+    "vitest": "^2.1.9"
+  },
   "dependencies": {
     "@apollo/server": "^5.5.0",
     "@as-integrations/express5": "^1.1.2",
