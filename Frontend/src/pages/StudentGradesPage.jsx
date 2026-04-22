@@ -102,49 +102,49 @@ export default function StudentGradesPage() {
     return (
         <PageSection title="Mes notes" subtitle="Notes de l etudiant connecte, filtrables par cours avec moyennes.">
             {error ? (
-                <p className="mb-4 rounded-lg border border-red-400/50 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                <p className="mb-4 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
                     {error}
                 </p>
             ) : null}
 
-            {isLoading ? <p className="text-gray-200">Chargement des notes...</p> : null}
+            {isLoading ? <p className="text-ink-800">Chargement des notes...</p> : null}
 
             {!isLoading && !error ? (
                 <div className="grid gap-6">
-                    <section className="rounded-xl border border-primary-500/30 bg-black/40 p-5">
-                        <h2 className="text-lg font-semibold text-white">Ma moyenne globale</h2>
-                        <p className="mt-2 text-2xl font-bold text-primary-200">
+                    <section className="rounded-xl border border-ink-500/30 bg-white/60 p-5">
+                        <h2 className="text-lg font-semibold text-black">Ma moyenne globale</h2>
+                        <p className="mt-2 text-2xl font-bold text-accent-600">
                             {globalStats ? formatAverage(globalStats.average) : 'N/A'}
                         </p>
-                        <p className="text-sm text-gray-300">
+                        <p className="text-sm text-ink-700">
                             Calculee sur {globalStats?.count ?? 0} note{(globalStats?.count ?? 0) > 1 ? 's' : ''}.
                         </p>
                     </section>
 
-                    <section className="rounded-xl border border-primary-500/30 bg-black/40 p-5">
-                        <h2 className="text-lg font-semibold text-white">Moyennes par cours</h2>
+                    <section className="rounded-xl border border-ink-500/30 bg-white/60 p-5">
+                        <h2 className="text-lg font-semibold text-black">Moyennes par cours</h2>
                         {statsByCourse.length === 0 ? (
-                            <p className="mt-2 text-sm text-gray-400">Aucune note pour le moment.</p>
+                            <p className="mt-2 text-sm text-ink-600">Aucune note pour le moment.</p>
                         ) : (
                             <ul className="mt-3 grid gap-2 md:grid-cols-2">
                                 {statsByCourse.map((entry) => (
-                                    <li key={entry.courseId} className="rounded-md border border-primary-500/20 bg-black/50 p-3">
-                                        <p className="font-semibold text-white">{entry.courseName}</p>
-                                        <p className="text-sm text-primary-200">Moyenne: {formatAverage(entry.average)}</p>
-                                        <p className="text-xs text-gray-400">{entry.count} note{entry.count > 1 ? 's' : ''}</p>
+                                    <li key={entry.courseId} className="rounded-md border border-ink-500/20 bg-white/70 p-3">
+                                        <p className="font-semibold text-black">{entry.courseName}</p>
+                                        <p className="text-sm text-accent-600">Moyenne: {formatAverage(entry.average)}</p>
+                                        <p className="text-xs text-ink-600">{entry.count} note{entry.count > 1 ? 's' : ''}</p>
                                     </li>
                                 ))}
                             </ul>
                         )}
                     </section>
 
-                    <section className="rounded-xl border border-primary-500/30 bg-black/40 p-5">
+                    <section className="rounded-xl border border-ink-500/30 bg-white/60 p-5">
                         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                            <h2 className="text-lg font-semibold text-white">Detail des evenements</h2>
+                            <h2 className="text-lg font-semibold text-black">Detail des evenements</h2>
                             <select
                                 value={selectedCourseId}
                                 onChange={(event) => setSelectedCourseId(event.target.value)}
-                                className="rounded-lg border border-primary-500/50 bg-black/70 px-4 py-2 md:max-w-xs"
+                                className="rounded-lg border border-ink-500/50 bg-white/80 px-4 py-2 md:max-w-xs"
                             >
                                 <option value="">Tous les cours</option>
                                 {courses.map((courseItem) => (
@@ -154,29 +154,29 @@ export default function StudentGradesPage() {
                         </div>
 
                         {selectedCourseStats ? (
-                            <p className="mt-3 text-sm text-primary-200">
+                            <p className="mt-3 text-sm text-accent-600">
                                 Moyenne {selectedCourseStats.courseName}: <span className="font-semibold">{formatAverage(selectedCourseStats.average)}</span> ({selectedCourseStats.count} note{selectedCourseStats.count > 1 ? 's' : ''})
                             </p>
                         ) : null}
 
                         {filteredEvents.length === 0 ? (
-                            <p className="mt-3 rounded-lg border border-primary-500/30 bg-black/40 px-4 py-3 text-gray-200">
+                            <p className="mt-3 rounded-lg border border-ink-500/30 bg-white/60 px-4 py-3 text-ink-800">
                                 Aucun evenement a afficher.
                             </p>
                         ) : (
                             <ul className="mt-3 space-y-3">
                                 {filteredEvents.map((eventItem) => (
-                                    <li key={eventItem.id} className="rounded-xl border border-primary-500/30 bg-black/40 p-4">
-                                        <p className="font-semibold text-white">{eventItem.courseName}</p>
-                                        <p className="text-sm text-gray-300">Classe: {eventItem.className}</p>
-                                        <p className="text-sm text-gray-300">
+                                    <li key={eventItem.id} className="rounded-xl border border-ink-500/30 bg-white/60 p-4">
+                                        <p className="font-semibold text-black">{eventItem.courseName}</p>
+                                        <p className="text-sm text-ink-700">Classe: {eventItem.className}</p>
+                                        <p className="text-sm text-ink-700">
                                             Date: {new Date(eventItem.startTime).toLocaleDateString()} - Debut: {new Date(eventItem.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - Fin: {new Date(eventItem.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </p>
-                                        <p className="mt-1 font-medium text-primary-200">
+                                        <p className="mt-1 font-medium text-accent-600">
                                             Note: {eventItem.gradeValue === null ? 'Non notee' : `${eventItem.gradeValue}/20`}
                                         </p>
                                         {eventItem.gradeComment ? (
-                                            <p className="text-sm text-gray-300">Commentaire: {eventItem.gradeComment}</p>
+                                            <p className="text-sm text-ink-700">Commentaire: {eventItem.gradeComment}</p>
                                         ) : null}
                                     </li>
                                 ))}

@@ -15,30 +15,30 @@ export default function Navbar() {
     }
 
     return (
-        <nav className="border-b border-primary-500/30 sticky top-0 z-50 bg-black/95 backdrop-blur-sm">
+        <nav className="border-b border-ink-500/30 sticky top-0 z-50 bg-primary-100/95 backdrop-blur-sm">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
                 <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gradient-to-br from-accent-400 to-accent-600 rounded-lg flex items-center justify-center">
                         <span className="font-bold text-lg">S</span>
                     </div>
                     <h1 className="text-2xl font-bold">SchooInc</h1>
                 </Link>
                 <div className="flex gap-4">
-                    <Link to="/classes" className="px-3 py-2 text-gray-200 hover:text-white transition-colors">
+                    <Link to="/classes" className="px-3 py-2 text-ink-800 hover:text-black transition-colors">
                         Classes
                     </Link>
-                    <Link to="/courses" className="px-3 py-2 text-gray-200 hover:text-white transition-colors">
+                    <Link to="/courses" className="px-3 py-2 text-ink-800 hover:text-black transition-colors">
                         Cours
                     </Link>
 
                     {user ? (
                         <>
-                            <Link to="/profile" className="px-3 py-2 text-primary-300 hover:text-primary-200 transition-colors">
+                            <Link to="/profile" className="px-3 py-2 text-accent-700 hover:text-accent-600 transition-colors">
                                 Profil
                             </Link>
 
                             {user.role === 'STUDENT' ? (
-                                <Link to="/student/calendar" className="px-3 py-2 text-primary-300 hover:text-primary-200 transition-colors">
+                                <Link to="/student/calendar" className="px-3 py-2 text-accent-700 hover:text-accent-600 transition-colors">
                                     Calendrier etudiant
                                 </Link>
                             ) : null}
@@ -48,17 +48,17 @@ export default function Navbar() {
                                     <button
                                         type="button"
                                         onClick={() => setShowProfMenu(!showProfMenu)}
-                                        className="px-3 py-2 text-primary-300 hover:text-primary-200 transition-colors flex items-center gap-1"
+                                        className="px-3 py-2 text-accent-700 hover:text-accent-600 transition-colors flex items-center gap-1"
                                     >
                                         Professeur
                                         <span className={`transition-transform ${showProfMenu ? 'rotate-180' : ''}`}>▼</span>
                                     </button>
                                     {showProfMenu && (
-                                        <div className="absolute top-full mt-1 right-0 bg-black/95 border border-primary-500/30 rounded-lg shadow-lg z-50 min-w-[200px]">
+                                        <div className="absolute top-full mt-1 right-0 bg-primary-100/95 border border-ink-500/30 rounded-lg shadow-lg z-50 min-w-[200px]">
                                             <Link
                                                 to="/professor/dashboard"
                                                 onClick={() => setShowProfMenu(false)}
-                                                className={`block px-4 py-3 text-sm hover:bg-primary-500/20 transition-colors ${location.pathname === '/professor/dashboard' ? 'bg-primary-500/10 text-primary-200' : 'text-gray-200'
+                                                className={`block px-4 py-3 text-sm hover:bg-accent-500/25 transition-colors ${location.pathname === '/professor/dashboard' ? 'bg-accent-500/15 text-accent-600' : 'text-ink-800'
                                                     }`}
                                             >
                                                 Dashboard
@@ -66,7 +66,7 @@ export default function Navbar() {
                                             <Link
                                                 to="/professor/grades"
                                                 onClick={() => setShowProfMenu(false)}
-                                                className={`block px-4 py-3 text-sm hover:bg-primary-500/20 transition-colors border-t border-primary-500/20 ${location.pathname === '/professor/grades' ? 'bg-primary-500/10 text-primary-200' : 'text-gray-200'
+                                                className={`block px-4 py-3 text-sm hover:bg-accent-500/25 transition-colors border-t border-ink-500/20 ${location.pathname === '/professor/grades' ? 'bg-accent-500/15 text-accent-600' : 'text-ink-800'
                                                     }`}
                                             >
                                                 Gestion des Notes
@@ -79,17 +79,17 @@ export default function Navbar() {
                             <button
                                 type="button"
                                 onClick={handleLogout}
-                                className="px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-colors font-medium"
+                                className="px-4 py-2 bg-gradient-to-r from-accent-500 to-accent-600 rounded-lg hover:from-accent-600 hover:to-accent-700 transition-colors font-medium"
                             >
                                 Se deconnecter
                             </button>
                         </>
                     ) : (
                         <>
-                            <Link to="/login" className="px-6 py-2 text-primary-400 hover:text-primary-300 transition-colors">
+                            <Link to="/login" className="px-6 py-2 text-accent-600 hover:text-accent-600 transition-colors">
                                 Se connecter
                             </Link>
-                            <Link to="/signup" className="px-6 py-2 bg-gradient-to-r from-primary-500 to-primary-600 rounded-lg hover:from-primary-600 hover:to-primary-700 transition-colors font-medium">
+                            <Link to="/signup" className="px-6 py-2 bg-gradient-to-r from-accent-500 to-accent-600 rounded-lg hover:from-accent-600 hover:to-accent-700 transition-colors font-medium">
                                 S inscrire
                             </Link>
                         </>

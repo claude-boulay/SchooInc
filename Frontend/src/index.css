@@ -8,7 +8,7 @@
 }
 
 body {
-    @apply bg-black text-white;
+    @apply bg-primary-300 text-black;
 }
 
 html {

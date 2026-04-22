@@ -153,33 +153,33 @@ export default function ProfessorGradesPage() {
 
     const renderStats = (stats) => {
         if (!stats) {
-            return <p className="text-sm text-gray-400">Aucune statistique disponible.</p>
+            return <p className="text-sm text-ink-600">Aucune statistique disponible.</p>
         }
 
         return (
-            <div className="mt-3 grid grid-cols-2 gap-2 text-sm text-gray-200 md:grid-cols-5">
-                <p>Moyenne: <span className="font-semibold text-white">{stats.average ?? 'N/A'}</span></p>
-                <p>Mediane: <span className="font-semibold text-white">{stats.median ?? 'N/A'}</span></p>
-                <p>Min: <span className="font-semibold text-white">{stats.minGrade ?? 'N/A'}</span></p>
-                <p>Max: <span className="font-semibold text-white">{stats.maxGrade ?? 'N/A'}</span></p>
-                <p>Nb notes: <span className="font-semibold text-white">{stats.count ?? 0}</span></p>
+            <div className="mt-3 grid grid-cols-2 gap-2 text-sm text-ink-800 md:grid-cols-5">
+                <p>Moyenne: <span className="font-semibold text-black">{stats.average ?? 'N/A'}</span></p>
+                <p>Mediane: <span className="font-semibold text-black">{stats.median ?? 'N/A'}</span></p>
+                <p>Min: <span className="font-semibold text-black">{stats.minGrade ?? 'N/A'}</span></p>
+                <p>Max: <span className="font-semibold text-black">{stats.maxGrade ?? 'N/A'}</span></p>
+                <p>Nb notes: <span className="font-semibold text-black">{stats.count ?? 0}</span></p>
             </div>
         )
     }
 
     const renderGrades = (grades) => {
         if (!grades || grades.length === 0) {
-            return <p className="mt-3 text-sm text-gray-400">Aucune note.</p>
+            return <p className="mt-3 text-sm text-ink-600">Aucune note.</p>
         }
 
         return (
-            <ul className="mt-3 space-y-2 text-sm text-gray-100">
+            <ul className="mt-3 space-y-2 text-sm text-black">
                 {grades.map((gradeItem) => (
-                    <li key={gradeItem.id} className="rounded-md border border-primary-500/20 bg-black/40 p-3">
-                        <p className="font-semibold text-white">{gradeItem.value}/20</p>
-                        <p className="text-xs text-primary-200">Etudiant: {studentsById.get(gradeItem.studentId)?.pseudo || gradeItem.studentId}</p>
-                        <p className="text-xs text-gray-300">Cours: {myCourses.find((courseItem) => courseItem.id === gradeItem.courseId)?.name || gradeItem.courseId}</p>
-                        {gradeItem.comment ? <p className="text-xs text-gray-300">Commentaire: {gradeItem.comment}</p> : null}
+                    <li key={gradeItem.id} className="rounded-md border border-ink-500/20 bg-white/60 p-3">
+                        <p className="font-semibold text-black">{gradeItem.value}/20</p>
+                        <p className="text-xs text-accent-600">Etudiant: {studentsById.get(gradeItem.studentId)?.pseudo || gradeItem.studentId}</p>
+                        <p className="text-xs text-ink-700">Cours: {myCourses.find((courseItem) => courseItem.id === gradeItem.courseId)?.name || gradeItem.courseId}</p>
+                        {gradeItem.comment ? <p className="text-xs text-ink-700">Commentaire: {gradeItem.comment}</p> : null}
                     </li>
                 ))}
             </ul>
@@ -189,22 +189,22 @@ export default function ProfessorGradesPage() {
     return (
         <PageSection title="Gestion des notes" subtitle="Notes par cours, classe et etudiant avec statistiques.">
             {error ? (
-                <p className="mb-4 rounded-lg border border-red-400/50 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                <p className="mb-4 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
                     {error}
                 </p>
             ) : null}
 
-            {isLoading ? <p className="text-gray-200">Chargement des donnees...</p> : null}
+            {isLoading ? <p className="text-ink-800">Chargement des donnees...</p> : null}
 
             {!isLoading ? (
                 <div className="grid gap-6">
-                    <section className="rounded-xl border border-primary-500/30 bg-black/40 p-5">
-                        <h2 className="text-lg font-semibold text-white">Voir les notes d un etudiant</h2>
+                    <section className="rounded-xl border border-ink-500/30 bg-white/60 p-5">
+                        <h2 className="text-lg font-semibold text-black">Voir les notes d un etudiant</h2>
                         <div className="mt-3 grid gap-3 md:grid-cols-2">
                             <select
                                 value={selectedStudentId}
                                 onChange={(event) => setSelectedStudentId(event.target.value)}
-                                className="rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3"
+                                className="rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3"
                             >
                                 {students.map((student) => (
                                     <option key={student.id} value={student.id}>{student.pseudo} - {student.email}</option>
@@ -213,7 +213,7 @@ export default function ProfessorGradesPage() {
                             <select
                                 value={selectedStudentCourseId}
                                 onChange={(event) => setSelectedStudentCourseId(event.target.value)}
-                                className="rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3"
+                                className="rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3"
                             >
                                 <option value="">Tous les cours</option>
                                 {myCourses.map((courseItem) => (
@@ -225,12 +225,12 @@ export default function ProfessorGradesPage() {
                         {renderGrades(studentView.grades)}
                     </section>
 
-                    <section className="rounded-xl border border-primary-500/30 bg-black/40 p-5">
-                        <h2 className="text-lg font-semibold text-white">Voir les notes d un cours</h2>
+                    <section className="rounded-xl border border-ink-500/30 bg-white/60 p-5">
+                        <h2 className="text-lg font-semibold text-black">Voir les notes d un cours</h2>
                         <select
                             value={selectedCourseId}
                             onChange={(event) => setSelectedCourseId(event.target.value)}
-                            className="mt-3 w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 md:max-w-md"
+                            className="mt-3 w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 md:max-w-md"
                         >
                             {myCourses.map((courseItem) => (
                                 <option key={courseItem.id} value={courseItem.id}>{courseItem.name}</option>
@@ -240,12 +240,12 @@ export default function ProfessorGradesPage() {
                         {renderGrades(courseView.grades)}
                     </section>
 
-                    <section className="rounded-xl border border-primary-500/30 bg-black/40 p-5">
-                        <h2 className="text-lg font-semibold text-white">Voir les notes d une classe</h2>
+                    <section className="rounded-xl border border-ink-500/30 bg-white/60 p-5">
+                        <h2 className="text-lg font-semibold text-black">Voir les notes d une classe</h2>
                         <select
                             value={selectedClassId}
                             onChange={(event) => setSelectedClassId(event.target.value)}
-                            className="mt-3 w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 md:max-w-md"
+                            className="mt-3 w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 md:max-w-md"
                         >
                             {myClasses.map((classItem) => (
                                 <option key={classItem.id} value={classItem.id}>{classItem.name}</option>
@@ -253,40 +253,33 @@ export default function ProfessorGradesPage() {
                         </select>
 
                         <div className="mt-4">
-                            <h3 className="text-sm font-semibold uppercase tracking-wide text-primary-200">
+                            <h3 className="text-sm font-semibold uppercase tracking-wide text-accent-600">
                                 Moyenne globale de la classe
                             </h3>
                             {renderStats(classView.stats)}
                         </div>
 
                         <div className="mt-5">
-                            <h3 className="text-sm font-semibold uppercase tracking-wide text-primary-200">
+                            <h3 className="text-sm font-semibold uppercase tracking-wide text-accent-600">
                                 Detail par cours
                             </h3>
                             {classStatsByCourse.length === 0 ? (
-                                <p className="mt-2 text-sm text-gray-400">Aucune note pour cette classe.</p>
+                                <p className="mt-2 text-sm text-ink-600">Aucune note pour cette classe.</p>
                             ) : (
                                 <ul className="mt-3 grid gap-2 md:grid-cols-2">
                                     {classStatsByCourse.map((entry) => (
-                                        <li key={entry.courseId} className="rounded-md border border-primary-500/20 bg-black/50 p-3">
-                                            <p className="font-semibold text-white">{entry.courseName}</p>
-                                            <div className="mt-1 grid grid-cols-2 gap-1 text-xs text-gray-200 md:grid-cols-4">
-                                                <p>Moyenne: <span className="font-semibold text-white">{entry.average.toFixed(2)}</span></p>
-                                                <p>Min: <span className="font-semibold text-white">{entry.minGrade}</span></p>
-                                                <p>Max: <span className="font-semibold text-white">{entry.maxGrade}</span></p>
-                                                <p>Nb: <span className="font-semibold text-white">{entry.count}</span></p>
+                                        <li key={entry.courseId} className="rounded-md border border-ink-500/20 bg-white/70 p-3">
+                                            <p className="font-semibold text-black">{entry.courseName}</p>
+                                            <div className="mt-1 grid grid-cols-2 gap-1 text-xs text-ink-800 md:grid-cols-4">
+                                                <p>Moyenne: <span className="font-semibold text-black">{entry.average.toFixed(2)}</span></p>
+                                                <p>Min: <span className="font-semibold text-black">{entry.minGrade}</span></p>
+                                                <p>Max: <span className="font-semibold text-black">{entry.maxGrade}</span></p>
+                                                <p>Nb: <span className="font-semibold text-black">{entry.count}</span></p>
                                             </div>
                                         </li>
                                     ))}
                                 </ul>
                             )}
-                        </div>
-
-                        <div className="mt-5">
-                            <h3 className="text-sm font-semibold uppercase tracking-wide text-primary-200">
-                                Detail des notes
-                            </h3>
-                            {renderGrades(classView.grades)}
                         </div>
                     </section>
                 </div>

@@ -55,16 +55,16 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center px-4 py-10">
-            <div className="w-full max-w-md rounded-2xl border border-primary-500/40 bg-gradient-to-b from-primary-500/15 to-black p-8 shadow-2xl shadow-primary-500/10">
+        <div className="min-h-screen bg-primary-300 text-black flex items-center justify-center px-4 py-10">
+            <div className="w-full max-w-md rounded-2xl border border-ink-500/40 bg-gradient-to-b from-accent-500/15 to-white p-8 shadow-2xl shadow-primary-500/10">
                 <div className="mb-8 text-center">
                     <h1 className="text-3xl font-bold">Se connecter</h1>
-                    <p className="mt-2 text-gray-300">Accede a ton espace SchooInc.</p>
+                    <p className="mt-2 text-ink-700">Accede a ton espace SchooInc.</p>
                 </div>
 
                 <form className="space-y-5" onSubmit={handleSubmit}>
                     <div>
-                        <label htmlFor="email" className="mb-2 block text-sm text-gray-200">
+                        <label htmlFor="email" className="mb-2 block text-sm text-ink-800">
                             Email
                         </label>
                         <input
@@ -74,12 +74,12 @@ export default function LoginPage() {
                             value={email}
                             onChange={(event) => setEmail(event.target.value)}
                             placeholder="nom@ecole.fr"
-                            className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 text-white placeholder:text-gray-500 outline-none transition-colors focus:border-primary-400"
+                            className="w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 text-black placeholder:text-ink-500 outline-none transition-colors focus:border-accent-500"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="mb-2 block text-sm text-gray-200">
+                        <label htmlFor="password" className="mb-2 block text-sm text-ink-800">
                             Mot de passe
                         </label>
                         <input
@@ -89,18 +89,18 @@ export default function LoginPage() {
                             value={password}
                             onChange={(event) => setPassword(event.target.value)}
                             placeholder="••••••••"
-                            className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 text-white placeholder:text-gray-500 outline-none transition-colors focus:border-primary-400"
+                            className="w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 text-black placeholder:text-ink-500 outline-none transition-colors focus:border-accent-500"
                         />
                     </div>
 
                     {error ? (
-                        <p className="rounded-lg border border-red-400/50 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                        <p className="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
                             {error}
                         </p>
                     ) : null}
 
                     {info ? (
-                        <p className="rounded-lg border border-primary-400/50 bg-primary-500/10 px-3 py-2 text-sm text-primary-200">
+                        <p className="rounded-lg border border-ink-400/50 bg-accent-500/15 px-3 py-2 text-sm text-accent-600">
                             {info}
                         </p>
                     ) : null}
@@ -108,7 +108,7 @@ export default function LoginPage() {
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full rounded-lg bg-gradient-to-r from-primary-500 to-primary-400 px-4 py-3 font-semibold text-white transition-opacity hover:opacity-90"
+                        className="w-full rounded-lg bg-gradient-to-r from-accent-500 to-accent-400 px-4 py-3 font-semibold text-black transition-opacity hover:opacity-90"
                     >
                         {isSubmitting ? 'Connexion...' : 'Connexion'}
                     </button>
@@ -117,29 +117,29 @@ export default function LoginPage() {
                         <button
                             type="button"
                             onClick={handleDevForgotPassword}
-                            className="w-full rounded-lg border border-primary-500/60 bg-black/40 px-4 py-3 text-sm font-semibold text-primary-300 transition-colors hover:border-primary-400 hover:text-primary-200"
+                            className="w-full rounded-lg border border-ink-500/60 bg-white/60 px-4 py-3 text-sm font-semibold text-accent-700 transition-colors hover:border-ink-400 hover:text-accent-600"
                         >
                             Mot de passe oublie (dev)
                         </button>
                     ) : null}
                 </form>
 
-                <p className="mt-6 text-center text-sm text-gray-300">
+                <p className="mt-6 text-center text-sm text-ink-700">
                     Pas encore de compte ?{' '}
-                    <Link to="/signup" className="font-semibold text-primary-400 hover:text-primary-300">
+                    <Link to="/signup" className="font-semibold text-accent-600 hover:text-accent-600">
                         Inscription
                     </Link>
                 </p>
 
-                <p className="mt-3 text-center text-sm text-gray-300">
+                <p className="mt-3 text-center text-sm text-ink-700">
                     Tu as un token de reinitialisation ?{' '}
-                    <Link to="/reset-password" className="font-semibold text-primary-400 hover:text-primary-300">
+                    <Link to="/reset-password" className="font-semibold text-accent-600 hover:text-accent-600">
                         Reinitialiser le mot de passe
                     </Link>
                 </p>
 
                 <div className="mt-4 text-center">
-                    <Link to="/" className="text-sm text-gray-400 hover:text-white">
+                    <Link to="/" className="text-sm text-ink-600 hover:text-black">
                         Retour a l accueil
                     </Link>
                 </div>

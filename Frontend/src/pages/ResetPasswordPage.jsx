@@ -53,16 +53,16 @@ export default function ResetPasswordPage() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-white flex items-center justify-center px-4 py-10">
-            <div className="w-full max-w-md rounded-2xl border border-primary-500/40 bg-gradient-to-b from-primary-500/15 to-black p-8 shadow-2xl shadow-primary-500/10">
+        <div className="min-h-screen bg-primary-300 text-black flex items-center justify-center px-4 py-10">
+            <div className="w-full max-w-md rounded-2xl border border-ink-500/40 bg-gradient-to-b from-accent-500/15 to-white p-8 shadow-2xl shadow-primary-500/10">
                 <div className="mb-8 text-center">
                     <h1 className="text-3xl font-bold">Reinitialiser le mot de passe</h1>
-                    <p className="mt-2 text-gray-300">Colle ton token puis choisis un nouveau mot de passe.</p>
+                    <p className="mt-2 text-ink-700">Colle ton token puis choisis un nouveau mot de passe.</p>
                 </div>
 
                 <form className="space-y-5" onSubmit={handleSubmit}>
                     <div>
-                        <label htmlFor="reset-token" className="mb-2 block text-sm text-gray-200">
+                        <label htmlFor="reset-token" className="mb-2 block text-sm text-ink-800">
                             Token de reinitialisation
                         </label>
                         <textarea
@@ -72,12 +72,12 @@ export default function ResetPasswordPage() {
                             value={token}
                             onChange={(event) => setToken(event.target.value)}
                             placeholder="Colle ici le token affiche dans les logs Service_User"
-                            className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 text-white placeholder:text-gray-500 outline-none transition-colors focus:border-primary-400"
+                            className="w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 text-black placeholder:text-ink-500 outline-none transition-colors focus:border-accent-500"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="new-password" className="mb-2 block text-sm text-gray-200">
+                        <label htmlFor="new-password" className="mb-2 block text-sm text-ink-800">
                             Nouveau mot de passe
                         </label>
                         <input
@@ -88,12 +88,12 @@ export default function ResetPasswordPage() {
                             value={newPassword}
                             onChange={(event) => setNewPassword(event.target.value)}
                             placeholder="••••••••"
-                            className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 text-white placeholder:text-gray-500 outline-none transition-colors focus:border-primary-400"
+                            className="w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 text-black placeholder:text-ink-500 outline-none transition-colors focus:border-accent-500"
                         />
                     </div>
 
                     <div>
-                        <label htmlFor="confirm-new-password" className="mb-2 block text-sm text-gray-200">
+                        <label htmlFor="confirm-new-password" className="mb-2 block text-sm text-ink-800">
                             Confirmer le nouveau mot de passe
                         </label>
                         <input
@@ -104,12 +104,12 @@ export default function ResetPasswordPage() {
                             value={confirmPassword}
                             onChange={(event) => setConfirmPassword(event.target.value)}
                             placeholder="••••••••"
-                            className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 text-white placeholder:text-gray-500 outline-none transition-colors focus:border-primary-400"
+                            className="w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 text-black placeholder:text-ink-500 outline-none transition-colors focus:border-accent-500"
                         />
                     </div>
 
                     {error ? (
-                        <p className="rounded-lg border border-red-400/50 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                        <p className="rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
                             {error}
                         </p>
                     ) : null}
@@ -123,14 +123,14 @@ export default function ResetPasswordPage() {
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full rounded-lg bg-gradient-to-r from-primary-500 to-primary-400 px-4 py-3 font-semibold text-white transition-opacity hover:opacity-90"
+                        className="w-full rounded-lg bg-gradient-to-r from-accent-500 to-accent-400 px-4 py-3 font-semibold text-black transition-opacity hover:opacity-90"
                     >
                         {isSubmitting ? 'Validation...' : 'Mettre a jour le mot de passe'}
                     </button>
                 </form>
 
                 <div className="mt-4 text-center">
-                    <Link to="/login" className="text-sm text-gray-400 hover:text-white">
+                    <Link to="/login" className="text-sm text-ink-600 hover:text-black">
                         Retour a la connexion
                     </Link>
                 </div>

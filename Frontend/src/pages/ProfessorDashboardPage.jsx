@@ -406,7 +406,7 @@ export default function ProfessorDashboardPage() {
     return (
         <PageSection title="Dashboard professeur" subtitle="Resume des classes, cours et activites pedagogiques.">
             {error ? (
-                <p className="mb-6 rounded-lg border border-red-400/50 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                <p className="mb-6 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
                     {error}
                 </p>
             ) : null}
@@ -418,59 +418,59 @@ export default function ProfessorDashboardPage() {
             ) : null}
 
             <div className="grid gap-8 lg:grid-cols-2">
-                <form className="rounded-xl border border-primary-500/30 p-5" onSubmit={handleCreateClass}>
+                <form className="rounded-xl border border-ink-500/30 p-5" onSubmit={handleCreateClass}>
                     <h2 className="text-xl font-semibold">Creer une classe</h2>
-                    <p className="mt-1 text-sm text-gray-300">Ajoute une nouvelle classe dont tu seras responsable.</p>
+                    <p className="mt-1 text-sm text-ink-700">Ajoute une nouvelle classe dont tu seras responsable.</p>
                     <input
                         type="text"
                         required
                         value={className}
                         onChange={(event) => setClassName(event.target.value)}
                         placeholder="Ex: L3-INFO-A"
-                        className="mt-4 w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                        className="mt-4 w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                     />
                     <button
                         type="submit"
                         disabled={isSubmitting || !className.trim()}
-                        className="mt-4 rounded-lg bg-gradient-to-r from-primary-500 to-primary-400 px-4 py-3 font-semibold"
+                        className="mt-4 rounded-lg bg-gradient-to-r from-accent-500 to-accent-400 px-4 py-3 font-semibold"
                     >
                         Creer la classe
                     </button>
                 </form>
 
-                <form className="rounded-xl border border-primary-500/30 p-5" onSubmit={handleCreateCourse}>
+                <form className="rounded-xl border border-ink-500/30 p-5" onSubmit={handleCreateCourse}>
                     <h2 className="text-xl font-semibold">Creer un cours</h2>
-                    <p className="mt-1 text-sm text-gray-300">Ajoute un cours rattache a ton profil professeur.</p>
+                    <p className="mt-1 text-sm text-ink-700">Ajoute un cours rattache a ton profil professeur.</p>
                     <input
                         type="text"
                         required
                         value={courseName}
                         onChange={(event) => setCourseName(event.target.value)}
                         placeholder="Ex: GraphQL avance"
-                        className="mt-4 w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                        className="mt-4 w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                     />
                     <button
                         type="submit"
                         disabled={isSubmitting || !courseName.trim()}
-                        className="mt-4 rounded-lg bg-gradient-to-r from-primary-500 to-primary-400 px-4 py-3 font-semibold"
+                        className="mt-4 rounded-lg bg-gradient-to-r from-accent-500 to-accent-400 px-4 py-3 font-semibold"
                     >
                         Creer le cours
                     </button>
                 </form>
             </div>
 
-            <form className="mt-8 rounded-xl border border-primary-500/30 p-5" onSubmit={handleAssignStudent}>
+            <form className="mt-8 rounded-xl border border-ink-500/30 p-5" onSubmit={handleAssignStudent}>
                 <h2 className="text-xl font-semibold">Associer un etudiant a une classe</h2>
-                <p className="mt-1 text-sm text-gray-300">Choisis une classe puis un etudiant.</p>
+                <p className="mt-1 text-sm text-ink-700">Choisis une classe puis un etudiant.</p>
 
                 <div className="mt-4 grid gap-4 md:grid-cols-2">
                     <div>
-                        <label htmlFor="class-select" className="mb-2 block text-sm text-gray-200">Classe</label>
+                        <label htmlFor="class-select" className="mb-2 block text-sm text-ink-800">Classe</label>
                         <select
                             id="class-select"
                             value={selectedClassId}
                             onChange={(event) => setSelectedClassId(event.target.value)}
-                            className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                            className="w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                         >
                             {sortedClasses.map((classItem) => (
                                 <option key={classItem.id} value={classItem.id}>
@@ -481,12 +481,12 @@ export default function ProfessorDashboardPage() {
                     </div>
 
                     <div>
-                        <label htmlFor="student-select" className="mb-2 block text-sm text-gray-200">Etudiant</label>
+                        <label htmlFor="student-select" className="mb-2 block text-sm text-ink-800">Etudiant</label>
                         <select
                             id="student-select"
                             value={selectedStudentId}
                             onChange={(event) => setSelectedStudentId(event.target.value)}
-                            className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                            className="w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                         >
                             {students.map((student) => (
                                 <option key={student.id} value={student.id}>
@@ -500,20 +500,20 @@ export default function ProfessorDashboardPage() {
                 <button
                     type="submit"
                     disabled={isSubmitting || !selectedClassId || !selectedStudentId || isLoading}
-                    className="mt-4 rounded-lg bg-gradient-to-r from-primary-500 to-primary-400 px-4 py-3 font-semibold"
+                    className="mt-4 rounded-lg bg-gradient-to-r from-accent-500 to-accent-400 px-4 py-3 font-semibold"
                 >
                     Associer
                 </button>
             </form>
 
             <div className="mt-8 grid gap-8 lg:grid-cols-2">
-                <form className="rounded-xl border border-primary-500/30 p-5" onSubmit={handleUpdateClass}>
+                <form className="rounded-xl border border-ink-500/30 p-5" onSubmit={handleUpdateClass}>
                     <h2 className="text-xl font-semibold">Modifier une classe</h2>
-                    <p className="mt-1 text-sm text-gray-300">Seules tes classes sont disponibles.</p>
+                    <p className="mt-1 text-sm text-ink-700">Seules tes classes sont disponibles.</p>
                     <select
                         value={selectedClassToEditId}
                         onChange={(event) => setSelectedClassToEditId(event.target.value)}
-                        className="mt-4 w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                        className="mt-4 w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                     >
                         {sortedClasses.map((classItem) => (
                             <option key={classItem.id} value={classItem.id}>
@@ -527,13 +527,13 @@ export default function ProfessorDashboardPage() {
                         value={updatedClassName}
                         onChange={(event) => setUpdatedClassName(event.target.value)}
                         placeholder="Nouveau nom de classe"
-                        className="mt-3 w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                        className="mt-3 w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                     />
                     <div className="mt-4 flex gap-3">
                         <button
                             type="submit"
                             disabled={isSubmitting || !selectedClassToEditId || !updatedClassName.trim()}
-                            className="rounded-lg bg-gradient-to-r from-primary-500 to-primary-400 px-4 py-3 font-semibold"
+                            className="rounded-lg bg-gradient-to-r from-accent-500 to-accent-400 px-4 py-3 font-semibold"
                         >
                             Modifier
                         </button>
@@ -541,20 +541,20 @@ export default function ProfessorDashboardPage() {
                             type="button"
                             onClick={handleDeleteClass}
                             disabled={isSubmitting || !selectedClassToEditId}
-                            className="rounded-lg border border-red-400/60 bg-red-500/10 px-4 py-3 font-semibold text-red-200"
+                            className="rounded-lg bg-red-600 px-4 py-3 font-semibold text-white shadow-sm shadow-red-900/20 transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             Supprimer
                         </button>
                     </div>
                 </form>
 
-                <form className="rounded-xl border border-primary-500/30 p-5" onSubmit={handleUpdateCourse}>
+                <form className="rounded-xl border border-ink-500/30 p-5" onSubmit={handleUpdateCourse}>
                     <h2 className="text-xl font-semibold">Modifier un cours</h2>
-                    <p className="mt-1 text-sm text-gray-300">Seuls tes cours sont disponibles.</p>
+                    <p className="mt-1 text-sm text-ink-700">Seuls tes cours sont disponibles.</p>
                     <select
                         value={selectedCourseToEditId}
                         onChange={(event) => setSelectedCourseToEditId(event.target.value)}
-                        className="mt-4 w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                        className="mt-4 w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                     >
                         {sortedCourses.map((courseItem) => (
                             <option key={courseItem.id} value={courseItem.id}>
@@ -568,13 +568,13 @@ export default function ProfessorDashboardPage() {
                         value={updatedCourseName}
                         onChange={(event) => setUpdatedCourseName(event.target.value)}
                         placeholder="Nouveau nom de cours"
-                        className="mt-3 w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                        className="mt-3 w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                     />
                     <div className="mt-4 flex gap-3">
                         <button
                             type="submit"
                             disabled={isSubmitting || !selectedCourseToEditId || !updatedCourseName.trim()}
-                            className="rounded-lg bg-gradient-to-r from-primary-500 to-primary-400 px-4 py-3 font-semibold"
+                            className="rounded-lg bg-gradient-to-r from-accent-500 to-accent-400 px-4 py-3 font-semibold"
                         >
                             Modifier
                         </button>
@@ -582,7 +582,7 @@ export default function ProfessorDashboardPage() {
                             type="button"
                             onClick={handleDeleteCourse}
                             disabled={isSubmitting || !selectedCourseToEditId}
-                            className="rounded-lg border border-red-400/60 bg-red-500/10 px-4 py-3 font-semibold text-red-200"
+                            className="rounded-lg bg-red-600 px-4 py-3 font-semibold text-white shadow-sm shadow-red-900/20 transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             Supprimer
                         </button>
@@ -590,36 +590,36 @@ export default function ProfessorDashboardPage() {
                 </form>
             </div>
 
-            <div className="mt-8 rounded-xl border border-primary-500/30 p-5">
+            <div className="mt-8 rounded-xl border border-ink-500/30 p-5">
                 <h2 className="text-xl font-semibold">Classes existantes</h2>
-                {isLoading ? <p className="mt-3 text-gray-300">Chargement...</p> : null}
+                {isLoading ? <p className="mt-3 text-ink-700">Chargement...</p> : null}
                 {!isLoading && sortedClasses.length === 0 ? (
-                    <p className="mt-3 text-gray-300">Aucune classe dont tu es responsable pour le moment.</p>
+                    <p className="mt-3 text-ink-700">Aucune classe dont tu es responsable pour le moment.</p>
                 ) : null}
                 {!isLoading && sortedClasses.length > 0 ? (
-                    <ul className="mt-3 grid gap-2 text-sm text-gray-200">
+                    <ul className="mt-3 grid gap-2 text-sm text-ink-800">
                         {sortedClasses.map((classItem) => (
-                            <li key={classItem.id} className="rounded-md border border-primary-500/20 px-3 py-2">
+                            <li key={classItem.id} className="rounded-md border border-ink-500/20 px-3 py-2">
                                 <details>
                                     <summary className="cursor-pointer select-none font-medium">
                                         {classItem.name} - {classItem.studentCount} etudiants
                                     </summary>
                                     <div className="mt-3 space-y-2">
                                         {classItem.enrollments.length === 0 ? (
-                                            <p className="text-gray-300">Aucun etudiant inscrit.</p>
+                                            <p className="text-ink-700">Aucun etudiant inscrit.</p>
                                         ) : (
                                             classItem.enrollments.map((enrollment) => {
                                                 const student = studentsById.get(enrollment.studentId)
                                                 return (
                                                     <div
                                                         key={`${enrollment.classId}-${enrollment.studentId}`}
-                                                        className="flex items-center justify-between rounded-md border border-primary-500/20 px-3 py-2"
+                                                        className="flex items-center justify-between rounded-md border border-ink-500/20 px-3 py-2"
                                                     >
                                                         <div>
                                                             <p className="font-medium">
                                                                 {student ? student.pseudo : enrollment.studentId}
                                                             </p>
-                                                            <p className="text-xs text-gray-400">
+                                                            <p className="text-xs text-ink-600">
                                                                 {student ? student.email : 'Etudiant inconnu'}
                                                             </p>
                                                         </div>
@@ -630,7 +630,7 @@ export default function ProfessorDashboardPage() {
                                                                 studentId: enrollment.studentId,
                                                             })}
                                                             disabled={isSubmitting}
-                                                            className="rounded-lg border border-red-400/60 bg-red-500/10 px-3 py-2 text-xs font-semibold text-red-200"
+                                                            className="rounded-lg bg-red-600 px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                                                         >
                                                             Supprimer
                                                         </button>
@@ -646,15 +646,15 @@ export default function ProfessorDashboardPage() {
                 ) : null}
             </div>
 
-            <div className="mt-8 rounded-xl border border-primary-500/30 p-5">
+            <div className="mt-8 rounded-xl border border-ink-500/30 p-5">
                 <h2 className="text-xl font-semibold">Cours existants</h2>
                 {!isLoading && sortedCourses.length === 0 ? (
-                    <p className="mt-3 text-gray-300">Aucun cours dont tu es responsable pour le moment.</p>
+                    <p className="mt-3 text-ink-700">Aucun cours dont tu es responsable pour le moment.</p>
                 ) : null}
                 {!isLoading && sortedCourses.length > 0 ? (
-                    <ul className="mt-3 grid gap-2 text-sm text-gray-200">
+                    <ul className="mt-3 grid gap-2 text-sm text-ink-800">
                         {sortedCourses.map((courseItem) => (
-                            <li key={courseItem.id} className="rounded-md border border-primary-500/20 px-3 py-2">
+                            <li key={courseItem.id} className="rounded-md border border-ink-500/20 px-3 py-2">
                                 {courseItem.name}
                             </li>
                         ))}
@@ -662,41 +662,41 @@ export default function ProfessorDashboardPage() {
                 ) : null}
             </div>
 
-            <div className="mt-8 rounded-xl border border-primary-500/30 p-5">
+            <div className="mt-8 rounded-xl border border-ink-500/30 p-5">
                 <h2 className="text-xl font-semibold">Calendrier</h2>
-                <p className="mt-1 text-sm text-gray-300">Ajouter ou modifier des evenements.</p>
+                <p className="mt-1 text-sm text-ink-700">Ajouter ou modifier des evenements.</p>
 
                 <form className="mt-4 grid gap-4" onSubmit={handleCreateCalendarEvent}>
                     <div className="grid gap-4 md:grid-cols-2">
                         <div>
-                            <label className="mb-2 block text-sm text-gray-200">Date</label>
+                            <label className="mb-2 block text-sm text-ink-800">Date</label>
                             <input
                                 type="date"
                                 required
                                 value={eventDate}
                                 onChange={(e) => setEventDate(e.target.value)}
-                                className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                                className="w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="mb-2 block text-sm text-gray-200">Debut</label>
+                                <label className="mb-2 block text-sm text-ink-800">Debut</label>
                                 <input
                                     type="time"
                                     required
                                     value={eventStartTime}
                                     onChange={(e) => setEventStartTime(e.target.value)}
-                                    className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                                    className="w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                                 />
                             </div>
                             <div>
-                                <label className="mb-2 block text-sm text-gray-200">Fin</label>
+                                <label className="mb-2 block text-sm text-ink-800">Fin</label>
                                 <input
                                     type="time"
                                     required
                                     value={eventEndTime}
                                     onChange={(e) => setEventEndTime(e.target.value)}
-                                    className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                                    className="w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                                 />
                             </div>
                         </div>
@@ -704,23 +704,23 @@ export default function ProfessorDashboardPage() {
 
                     <div className="grid gap-4 md:grid-cols-2">
                         <div>
-                            <label className="mb-2 block text-sm text-gray-200">Classe</label>
+                            <label className="mb-2 block text-sm text-ink-800">Classe</label>
                             <select
                                 required
                                 value={eventClassId}
                                 onChange={(e) => setEventClassId(e.target.value)}
-                                className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                                className="w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                             >
                                 {sortedClasses.map((cl) => <option key={cl.id} value={cl.id}>{cl.name}</option>)}
                             </select>
                         </div>
                         <div>
-                            <label className="mb-2 block text-sm text-gray-200">Cours</label>
+                            <label className="mb-2 block text-sm text-ink-800">Cours</label>
                             <select
                                 required
                                 value={eventCourseId}
                                 onChange={(e) => setEventCourseId(e.target.value)}
-                                className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                                className="w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                             >
                                 {sortedCourses.map((co) => <option key={co.id} value={co.id}>{co.name}</option>)}
                             </select>
@@ -730,28 +730,28 @@ export default function ProfessorDashboardPage() {
                     <button
                         type="submit"
                         disabled={isSubmitting || !eventClassId || !eventCourseId || !eventDate || !eventStartTime || !eventEndTime}
-                        className="mt-2 rounded-lg bg-gradient-to-r from-primary-500 to-primary-400 px-4 py-3 text-left font-semibold inline-block w-max text-white"
+                        className="mt-2 rounded-lg bg-gradient-to-r from-accent-500 to-accent-400 px-4 py-3 text-left font-semibold inline-block w-max text-black"
                     >
                         Ajouter l evenement
                     </button>
                 </form>
 
                 <div className="mt-8">
-                    <h3 className="font-semibold text-lg border-b border-primary-500/20 pb-2">Evenements a venir (par classe)</h3>
-                    {sortedClasses.length === 0 ? <p className="mt-3 text-sm text-gray-300">Aucune classe.</p> : null}
+                    <h3 className="font-semibold text-lg border-b border-ink-500/20 pb-2">Evenements a venir (par classe)</h3>
+                    {sortedClasses.length === 0 ? <p className="mt-3 text-sm text-ink-700">Aucune classe.</p> : null}
                     {sortedClasses.map((cl) => {
                         const events = cl.events || []
                         if (events.length === 0) return null
 
                         return (
                             <div key={cl.id} className="mt-4">
-                                <h4 className="font-medium text-primary-300">{cl.name}</h4>
+                                <h4 className="font-medium text-accent-700">{cl.name}</h4>
                                 <ul className="mt-2 space-y-2">
                                     {events.map((ev) => (
-                                        <li key={ev.id} className="flex justify-between items-center bg-black/40 border border-primary-500/20 p-3 rounded-md text-sm">
+                                        <li key={ev.id} className="flex justify-between items-center bg-white/60 border border-ink-500/20 p-3 rounded-md text-sm">
                                             <div>
                                                 <p className="font-semibold">{ev.course?.name || 'Cours inconnu'}</p>
-                                                <p className="text-gray-300">
+                                                <p className="text-ink-700">
                                                     {new Date(ev.startTime).toLocaleDateString()} de {new Date(ev.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} a {new Date(ev.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </p>
                                             </div>
@@ -759,7 +759,7 @@ export default function ProfessorDashboardPage() {
                                                 type="button"
                                                 onClick={() => handleDeleteCalendarEvent(ev.id)}
                                                 disabled={isSubmitting}
-                                                className="text-red-400 border border-red-500/30 hover:bg-red-500/10 px-3 py-1 rounded"
+                                                className="rounded bg-red-600 px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                                             >
                                                 Supprimer
                                             </button>
@@ -772,22 +772,22 @@ export default function ProfessorDashboardPage() {
                 </div>
             </div>
 
-            <div className="mt-8 rounded-xl border border-primary-500/30 p-5">
+            <div className="mt-8 rounded-xl border border-ink-500/30 p-5">
                 <h2 className="text-xl font-semibold">Noter un evenement</h2>
-                <p className="mt-1 text-sm text-gray-300">Choisis un evenement puis attribue une note sur 20 aux etudiants de la classe.</p>
+                <p className="mt-1 text-sm text-ink-700">Choisis un evenement puis attribue une note sur 20 aux etudiants de la classe.</p>
 
                 {eventsToGrade.length === 0 ? (
-                    <p className="mt-4 text-sm text-gray-300">Aucun evenement disponible pour la notation.</p>
+                    <p className="mt-4 text-sm text-ink-700">Aucun evenement disponible pour la notation.</p>
                 ) : (
                     <form className="mt-4" onSubmit={handleGradeEvent}>
-                        <label className="mb-2 block text-sm text-gray-200" htmlFor="event-to-grade-select">
+                        <label className="mb-2 block text-sm text-ink-800" htmlFor="event-to-grade-select">
                             Evenement
                         </label>
                         <select
                             id="event-to-grade-select"
                             value={selectedEventToGradeId}
                             onChange={(event) => setSelectedEventToGradeId(event.target.value)}
-                            className="w-full rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                            className="w-full rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                         >
                             {eventsToGrade.map((eventItem) => (
                                 <option key={eventItem.id} value={eventItem.id}>
@@ -802,9 +802,9 @@ export default function ProfessorDashboardPage() {
                                     const student = studentsById.get(studentId)
 
                                     return (
-                                        <div key={studentId} className="rounded-md border border-primary-500/20 bg-black/40 p-3">
-                                            <p className="font-medium text-white">{student ? student.pseudo : studentId}</p>
-                                            <p className="text-xs text-gray-400">{student ? student.email : 'Etudiant inconnu'}</p>
+                                        <div key={studentId} className="rounded-md border border-ink-500/20 bg-white/60 p-3">
+                                            <p className="font-medium text-black">{student ? student.pseudo : studentId}</p>
+                                            <p className="text-xs text-ink-600">{student ? student.email : 'Etudiant inconnu'}</p>
                                             <div className="mt-2 grid gap-3 md:grid-cols-2">
                                                 <input
                                                     type="number"
@@ -814,14 +814,14 @@ export default function ProfessorDashboardPage() {
                                                     placeholder="Note /20"
                                                     value={gradeValuesByStudentId[studentId] || ''}
                                                     onChange={(event) => handleGradeValueChange(studentId, event.target.value)}
-                                                    className="rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                                                    className="rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                                                 />
                                                 <input
                                                     type="text"
                                                     placeholder="Commentaire (optionnel)"
                                                     value={gradeCommentsByStudentId[studentId] || ''}
                                                     onChange={(event) => handleGradeCommentChange(studentId, event.target.value)}
-                                                    className="rounded-lg border border-primary-500/50 bg-black/70 px-4 py-3 outline-none focus:border-primary-400"
+                                                    className="rounded-lg border border-ink-500/50 bg-white/80 px-4 py-3 outline-none focus:border-accent-500"
                                                 />
                                             </div>
                                         </div>
@@ -831,7 +831,7 @@ export default function ProfessorDashboardPage() {
                         ) : null}
 
                         {selectedEventToGrade && selectedEventToGrade.studentIds.length === 0 ? (
-                            <p className="mt-4 text-sm text-gray-300">Aucun etudiant inscrit dans la classe de cet evenement.</p>
+                            <p className="mt-4 text-sm text-ink-700">Aucun etudiant inscrit dans la classe de cet evenement.</p>
                         ) : null}
 
                         <button
@@ -841,7 +841,7 @@ export default function ProfessorDashboardPage() {
                                 !selectedEventToGrade ||
                                 selectedEventToGrade.studentIds.length === 0
                             }
-                            className="mt-4 rounded-lg bg-gradient-to-r from-primary-500 to-primary-400 px-4 py-3 font-semibold"
+                            className="mt-4 rounded-lg bg-gradient-to-r from-accent-500 to-accent-400 px-4 py-3 font-semibold"
                         >
                             Enregistrer les notes
                         </button>

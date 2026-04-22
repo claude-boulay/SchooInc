@@ -215,6 +215,14 @@ export const mutations = {
     const schoolClass = await findClassById(input.classId);
     ensureClassOwnedByProfessor(schoolClass, context.currentUser.id);
 
+    // Implicitly register the course in the class: if a calendar event pairs
+    // them, the course is de-facto part of the class. Keeps class_courses in
+    // sync with reality (idempotent via ON CONFLICT DO NOTHING).
+    await addCourseToClass({
+      classId: input.classId,
+      courseId: input.courseId,
+    });
+
     const { createCalendarEvent } = await import("../../db/models/calendar_events.model.js");
     return createCalendarEvent({
       startTime: input.startTime,

@@ -59,6 +59,10 @@ export const listGradesByCourse = async (courseId) => {
 };
 
 export const listGradesByClass = async (classId) => {
+  // A grade belongs to a class if its student is enrolled in that class.
+  // We intentionally do NOT join on class_courses: the class/course link is
+  // created implicitly by calendar events, and students are already
+  // constrained to a single class (UNIQUE class_enrollments.student_id).
   const result = await query(
     `
       SELECT
@@ -66,7 +70,6 @@ export const listGradesByClass = async (classId) => {
         g.professor_id, g.comment, g.created_at, g.updated_at
       FROM grades g
       INNER JOIN class_enrollments ce ON g.student_id = ce.student_id
-      INNER JOIN class_courses cc ON ce.class_id = cc.class_id AND g.course_id = cc.course_id
       WHERE ce.class_id = $1
       ORDER BY g.student_id, g.course_id, g.created_at DESC
     `,
@@ -225,6 +228,8 @@ export const getGradeStatsForCourse = async (courseId) => {
 };
 
 export const getGradeStatsForClass = async (classId) => {
+  // Same logic as listGradesByClass: filter only on enrollment to avoid
+  // relying on the class_courses mirror table.
   const result = await query(
     `
       SELECT
@@ -235,7 +240,6 @@ export const getGradeStatsForClass = async (classId) => {
         COUNT(*)::INT as count
       FROM grades g
       INNER JOIN class_enrollments ce ON g.student_id = ce.student_id
-      INNER JOIN class_courses cc ON ce.class_id = cc.class_id AND g.course_id = cc.course_id
       WHERE ce.class_id = $1
     `,
     [classId]

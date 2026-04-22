@@ -28,15 +28,15 @@ export default function CoursesPublicPage() {
     return (
         <PageSection title="Liste des cours" subtitle="Page publique: consultation des cours disponibles.">
             {error ? (
-                <p className="mb-4 rounded-lg border border-red-400/50 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+                <p className="mb-4 rounded-lg border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700">
                     {error}
                 </p>
             ) : null}
 
-            {isLoading ? <p className="text-gray-200">Chargement des cours...</p> : null}
+            {isLoading ? <p className="text-ink-800">Chargement des cours...</p> : null}
 
             {!isLoading && !error && courses.length === 0 ? (
-                <p className="rounded-lg border border-primary-500/30 bg-black/40 px-4 py-3 text-gray-200">
+                <p className="rounded-lg border border-ink-500/30 bg-white/60 px-4 py-3 text-ink-800">
                     Aucun cours disponible pour le moment.
                 </p>
             ) : null}
@@ -44,31 +44,31 @@ export default function CoursesPublicPage() {
             {!isLoading && !error && courses.length > 0 ? (
                 <div className="grid gap-4 md:grid-cols-2">
                     {courses.map((course) => (
-                        <article key={course.id} className="rounded-xl border border-primary-500/30 bg-black/40 p-5">
-                            <h2 className="text-xl font-semibold text-white">{course.name}</h2>
-                            <p className="mt-1 text-sm text-primary-200">
+                        <article key={course.id} className="rounded-xl border border-ink-500/30 bg-white/60 p-5">
+                            <h2 className="text-xl font-semibold text-black">{course.name}</h2>
+                            <p className="mt-1 text-sm text-accent-600">
                                 {course.events.length} evenement{course.events.length > 1 ? 's' : ''} associe{course.events.length > 1 ? 's' : ''}
                             </p>
 
-                            <div className="mt-4 border-t border-primary-500/30 pt-3">
-                                <p className="text-xs uppercase tracking-wide text-primary-300">Evenements</p>
+                            <div className="mt-4 border-t border-ink-500/30 pt-3">
+                                <p className="text-xs uppercase tracking-wide text-accent-700">Evenements</p>
 
                                 {course.events.length > 0 ? (
-                                    <ul className="mt-2 space-y-2 text-sm text-gray-100">
+                                    <ul className="mt-2 space-y-2 text-sm text-black">
                                         {course.events.map((eventItem) => {
                                             const startDate = new Date(eventItem.startTime)
                                             const endDate = new Date(eventItem.endTime)
 
                                             return (
                                                 <li key={eventItem.id} className="rounded border border-white/10 bg-white/5 p-3">
-                                                    <p className="font-medium text-white">{eventItem.className}</p>
-                                                    <p className="text-gray-300">
+                                                    <p className="font-medium text-black">{eventItem.className}</p>
+                                                    <p className="text-ink-700">
                                                         Date: {startDate.toLocaleDateString()}
                                                     </p>
-                                                    <p className="text-gray-300">
+                                                    <p className="text-ink-700">
                                                         Debut: {startDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                     </p>
-                                                    <p className="text-gray-300">
+                                                    <p className="text-ink-700">
                                                         Fin: {endDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                     </p>
                                                 </li>
@@ -76,7 +76,7 @@ export default function CoursesPublicPage() {
                                         })}
                                     </ul>
                                 ) : (
-                                    <p className="mt-2 text-sm text-gray-400">Aucun evenement associe.</p>
+                                    <p className="mt-2 text-sm text-ink-600">Aucun evenement associe.</p>
                                 )}
                             </div>
                         </article>
