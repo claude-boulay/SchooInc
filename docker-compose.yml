@@ -54,11 +54,15 @@ services:
     build:
       context: ./Service_User
       dockerfile: Dockerfile
-    env_file:
-      - ./Service_User/.env
     environment:
+      PORT: 4001
+      JWT_SECRET: change-me-in-production
       DB_HOST: db-user
       DB_PORT: 5432
+      DB_USER: auth_user
+      DB_PASSWORD: auth_pass
+      DB_NAME: auth_db
+      DB_POOL_MAX: 10
       GRADING_SERVICE_URL: http://service-grading:4003/graphql
     depends_on:
       db-user:
@@ -70,11 +74,16 @@ services:
     build:
       context: ./Service_School
       dockerfile: Dockerfile
-    env_file:
-      - ./Service_School/.env
     environment:
+      PORT: 4002
+      JWT_SECRET: change-me-in-production
       DB_HOST: db-school
       DB_PORT: 5432
+      DB_USER: school_user
+      DB_PASSWORD: school_pass
+      DB_NAME: school_db
+      DB_POOL_MAX: 10
+
       USER_SERVICE_URL: http://service-user:4001/graphql
       GRADING_SERVICE_URL: http://service-grading:4003/graphql
     depends_on:
@@ -93,11 +102,15 @@ services:
     build:
       context: ./Service_Grading
       dockerfile: Dockerfile
-    env_file:
-      - ./Service_Grading/.env
     environment:
+      PORT: 4003
+      JWT_SECRET: change-me-in-production
       DB_HOST: db-grading
       DB_PORT: 5432
+      DB_USER: grading_user
+      DB_PASSWORD: grading_pass
+      DB_NAME: grading_db
+      DB_POOL_MAX: 10
       SCHOOL_SERVICE_URL: http://service-school:4002/graphql
     depends_on:
       db-grading:
@@ -113,8 +126,6 @@ services:
     build:
       context: ./Gateway
       dockerfile: Dockerfile
-    env_file:
-      - ./Gateway/.env
     environment:
       HOST: 0.0.0.0
       USER_SERVICE_URL: http://service-user:4001/graphql

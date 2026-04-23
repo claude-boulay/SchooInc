@@ -7,8 +7,6 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD || "grading_pass",
   database: process.env.DB_NAME || "grading_db",
   max: Number(process.env.DB_POOL_MAX || 10),
-  idleTimeoutMillis: Number(process.env.DB_IDLE_TIMEOUT_MS || 30000),
-  connectionTimeoutMillis: Number(process.env.DB_CONNECTION_TIMEOUT_MS || 5000),
 });
 
 pool.on("error", (error) => {
