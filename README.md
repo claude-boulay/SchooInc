@@ -91,6 +91,24 @@ cd ../Service_Grading && npm install
 
 Option simple: utiliser Docker uniquement pour les DB.
 
+Depuis la racine:
+
+```bash
+docker compose up -d db-user db-school db-grading
+```
+
+Verifier que les 3 DB sont up:
+
+```bash
+docker compose ps
+```
+
+Arreter uniquement les DB:
+
+```bash
+docker compose stop db-user db-school db-grading
+```
+
 ### 5.3 Demarrer les services
 
 Dans 4 terminaux distincts:
@@ -108,9 +126,18 @@ Puis frontend:
 cd Frontend && npm run dev
 ```
 
+ou docker compose up -d --build pour lancer les services et bases de données
+
 ## 6. Variables d environnement
 
-Le projet utilise des defaults raisonnables en local pour la plupart des variables DB, mais pour un rendu propre il est recommande d avoir des `.env` par service.
+Le projet peut fonctionner avec des valeurs par defaut, mais pour un lancement local propre (hors Docker) il est recommande d utiliser des `.env` explicites.
+
+Fichiers recommandes:
+- `Service_User/.env`
+- `Service_School/.env`
+- `Service_Grading/.env`
+- `Gateway/.env`
+- `Frontend/.env` (optionnel)
 
 Variables principales:
 
@@ -135,10 +162,23 @@ Variables principales:
 	- `BCRYPT_SALT_ROUNDS`
 
 - Service_School:
-	- `USER_SERVICE_URL` (utilise pour purge des classes/cours orphelins)
+	- `USER_SERVICE_URL` (local conseille: `http://localhost:4001/graphql`)
+	- `GRADING_SERVICE_URL` (local conseille: `http://localhost:4003/graphql`)
+
+- Service_Grading:
+	- `SCHOOL_SERVICE_URL` (local conseille: `http://localhost:4002/graphql`)
+
+- Gateway:
+	- `USER_SERVICE_URL` (local conseille: `http://localhost:4001/graphql`)
+	- `SCHOOL_SERVICE_URL` (local conseille: `http://localhost:4002/graphql`)
+	- `GRADING_SERVICE_URL` (local conseille: `http://localhost:4003/graphql`)
 
 - Frontend:
 	- `VITE_GATEWAY_URL` (default: `http://localhost:4000/graphql`)
+
+Note importante (local sans Docker):
+- Ne pas utiliser les hostnames Docker (`service-user`, `service-school`, `service-grading`) dans les `.env` locaux.
+- Utiliser `localhost` + les ports exposes.
 
 ## 7. Fonctionnalites (alignement sujet)
 
