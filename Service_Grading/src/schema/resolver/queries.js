@@ -6,6 +6,7 @@ import {
   listGradesByCourse,
   listGradesByStudent,
 } from "../../db/models/grades.model.js";
+import { syncSchoolData } from "../../db/sync.js";
 
 const ensureAuthenticated = (context) => {
   if (!context.currentUser?.id) {
@@ -20,6 +21,14 @@ const ensureProfessor = (context) => {
 
   if (context.currentUser.role !== "PROFESSOR") {
     throw new Error("Professor role required");
+  }
+};
+
+const refreshSchoolMirror = async () => {
+  try {
+    await syncSchoolData();
+  } catch (error) {
+    console.warn("[grading] Could not refresh school mirror before class query:", error.message);
   }
 };
 
@@ -63,6 +72,7 @@ export const queries = {
 
   gradesByClass: async (_, { classId }, context) => {
     ensureProfessor(context);
+    await refreshSchoolMirror();
 
     const grades = await listGradesByClass(classId);
     return grades;
@@ -80,6 +90,7 @@ export const queries = {
 
   classStats: async (_, { classId }, context) => {
     ensureProfessor(context);
+    await refreshSchoolMirror();
 
     return getGradeStatsForClass(classId);
   },

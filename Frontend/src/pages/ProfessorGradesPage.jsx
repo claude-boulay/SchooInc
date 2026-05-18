@@ -67,6 +67,49 @@ export default function ProfessorGradesPage() {
             .sort((a, b) => a.courseName.localeCompare(b.courseName))
     }, [classView.grades, coursesById])
 
+    const computedClassStats = useMemo(() => {
+        if (!classView.grades || classView.grades.length === 0) {
+            return null
+        }
+
+        const values = classView.grades
+            .map((gradeItem) => Number(gradeItem.value))
+            .filter((value) => Number.isFinite(value))
+
+        if (values.length === 0) {
+            return null
+        }
+
+        const sortedValues = [...values].sort((a, b) => a - b)
+        const middleIndex = Math.floor(sortedValues.length / 2)
+        const median =
+            sortedValues.length % 2 === 0
+                ? (sortedValues[middleIndex - 1] + sortedValues[middleIndex]) / 2
+                : sortedValues[middleIndex]
+
+        const average = values.reduce((sum, value) => sum + value, 0) / values.length
+
+        return {
+            average: Number(average.toFixed(2)),
+            median: Number(median.toFixed(2)),
+            minGrade: Math.min(...values),
+            maxGrade: Math.max(...values),
+            count: values.length,
+        }
+    }, [classView.grades])
+
+    const classGlobalStats = useMemo(() => {
+        if (!classView.stats) {
+            return computedClassStats
+        }
+
+        if ((classView.stats.count ?? 0) === 0 && (classView.grades?.length ?? 0) > 0) {
+            return computedClassStats
+        }
+
+        return classView.stats
+    }, [classView.stats, classView.grades, computedClassStats])
+
     useEffect(() => {
         const loadBaseData = async () => {
             setIsLoading(true)
@@ -256,7 +299,7 @@ export default function ProfessorGradesPage() {
                             <h3 className="text-sm font-semibold uppercase tracking-wide text-accent-600">
                                 Moyenne globale de la classe
                             </h3>
-                            {renderStats(classView.stats)}
+                            {renderStats(classGlobalStats)}
                         </div>
 
                         <div className="mt-5">
